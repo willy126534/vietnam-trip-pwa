@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vn-trip-v2';
+const CACHE_NAME = 'vn-trip-v4';
 const urlsToCache = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force the waiting service worker to become the active service worker
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -26,16 +27,29 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim()) // claim clients immediately
   );
 });
 
 self.addEventListener('fetch', event => {
+  // Network first for app.jsx during development
+  if (event.request.url.includes('app.jsx') || event.request.url.includes('index.html')) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+        return response;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache first for everything else
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
-          return response; // Cache hit
+          return response;
         }
         return fetch(event.request);
       })

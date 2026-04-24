@@ -554,6 +554,88 @@ function SOS({ onLogout }) {
   );
 }
 
+function AiAssistant({ user }) {
+  const [requests, setRequests] = useState([]);
+  const [newReq, setNewReq] = useState("");
+
+  useEffect(() => {
+    if (!db) return;
+    const q = query(collection(db, "ai_requests"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setRequests(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!newReq.trim() || !db) return;
+    try {
+      await addDoc(collection(db, "ai_requests"), {
+        text: newReq,
+        author: user.displayName || user.email,
+        createdAt: serverTimestamp(),
+        status: 'pending' // pending, completed
+      });
+      setNewReq("");
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  };
+
+  return (
+    <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8]">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 shadow-sm shrink-0">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <i className="ph-fill ph-magic-wand"></i> AI 助理 (Antigravity)
+        </h2>
+        <p className="text-xs text-purple-100 mt-2">
+          在此輸入你想要的改動。當你回到電腦旁告訴我「執行」，我就會自動幫你改 Code 並且 Push！
+        </p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
+        {requests.length === 0 ? (
+          <div className="text-center text-gray-400 mt-10">
+            <i className="ph-fill ph-robot text-6xl text-gray-300 mb-2 block"></i>
+            目前沒有待處理的願望。<br/>想改什麼背景顏色或排版嗎？直接告訴我！
+          </div>
+        ) : (
+          requests.map(req => (
+            <div key={req.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">{req.author}</span>
+                {req.status === 'completed' ? (
+                  <span className="text-xs text-green-500 font-bold flex items-center gap-1"><i className="ph-bold ph-check"></i> 已完成</span>
+                ) : (
+                  <span className="text-xs text-orange-500 font-bold flex items-center gap-1"><i className="ph-bold ph-clock"></i> 等待 IDE 執行</span>
+                )}
+              </div>
+              <p className="text-gray-700 text-sm whitespace-pre-wrap">{req.text}</p>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="p-4 bg-white border-t border-gray-100 shrink-0 mb-16">
+        <form onSubmit={handleSend} className="flex gap-2">
+          <input
+            type="text"
+            value={newReq}
+            onChange={(e) => setNewReq(e.target.value)}
+            placeholder="例如：把頂部導覽列改成紅色"
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <button type="submit" className="bg-purple-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-purple-700 transition-colors">
+            <i className="ph-bold ph-paper-plane-right"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -589,6 +671,7 @@ function App() {
       case 'souvenirs': return <Souvenirs />;
       case 'transport': return <Transport />;
       case 'preparation': return <Preparation />;
+      case 'ai': return <AiAssistant user={user} />;
       case 'sos': return <SOS onLogout={() => signOut(auth)} />;
       default: return <Itinerary />;
     }
@@ -603,45 +686,53 @@ function App() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-2 py-2 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe">
+      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-1 py-2 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe overflow-x-auto hide-scrollbar">
         <button 
           onClick={() => setActiveTab('itinerary')}
-          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'itinerary' ? 'ph-fill ph-calendar-check' : 'ph ph-calendar-check'}`}></i>
-          <span className="text-[10px] font-bold">行程</span>
+          <span className="text-[9px] font-bold">行程</span>
         </button>
         
         <button 
           onClick={() => setActiveTab('souvenirs')}
-          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'souvenirs' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'souvenirs' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'souvenirs' ? 'ph-fill ph-shopping-bag' : 'ph ph-shopping-bag'}`}></i>
-          <span className="text-[10px] font-bold">伴手禮</span>
+          <span className="text-[9px] font-bold">伴手禮</span>
         </button>
 
         <button 
           onClick={() => setActiveTab('transport')}
-          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'transport' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'transport' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'transport' ? 'ph-fill ph-train' : 'ph ph-train'}`}></i>
-          <span className="text-[10px] font-bold">交通</span>
+          <span className="text-[9px] font-bold">交通</span>
         </button>
 
         <button 
           onClick={() => setActiveTab('preparation')}
-          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'preparation' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'preparation' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'preparation' ? 'ph-fill ph-check-square' : 'ph ph-check-square'}`}></i>
-          <span className="text-[10px] font-bold">出發準備</span>
+          <span className="text-[9px] font-bold">準備</span>
+        </button>
+
+        <button 
+          onClick={() => setActiveTab('ai')}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'ai' ? 'text-purple-400' : 'text-gray-400 hover:text-purple-400'}`}
+        >
+          <i className={`text-2xl ${activeTab === 'ai' ? 'ph-fill ph-magic-wand' : 'ph ph-magic-wand'}`}></i>
+          <span className="text-[9px] font-bold">AI助理</span>
         </button>
 
         <button 
           onClick={() => setActiveTab('sos')}
-          className={`flex-1 flex flex-col items-center gap-1 py-1 transition-colors ${activeTab === 'sos' ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`}
+          className={`flex-none w-[60px] flex flex-col items-center gap-1 py-1 transition-colors ${activeTab === 'sos' ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`}
         >
           <i className={`text-2xl ${activeTab === 'sos' ? 'ph-fill ph-first-aid' : 'ph ph-first-aid'}`}></i>
-          <span className="text-[10px] font-bold">SOS</span>
+          <span className="text-[9px] font-bold">SOS</span>
         </button>
       </div>
 
