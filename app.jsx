@@ -230,9 +230,9 @@ function EditableText({ value, onSave, className, isMultiline = false }) {
 }
 
 function Itinerary() {
-  const [expandedDay, setExpandedDay] = useState(null);
   const [itineraryData, setItineraryData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeDay, setActiveDay] = useState(1);
 
   useEffect(() => {
     if (!db) return;
@@ -275,11 +275,6 @@ function Itinerary() {
     }
   };
 
-  const toggleDay = (day) => {
-    if (expandedDay === day) setExpandedDay(null);
-    else setExpandedDay(day);
-  };
-
   const getColorClass = (color) => {
     const colors = {
       blue: 'bg-blue-100 text-blue-600', indigo: 'bg-indigo-100 text-indigo-600',
@@ -287,14 +282,6 @@ function Itinerary() {
       pink: 'bg-pink-100 text-pink-600', yellow: 'bg-yellow-100 text-yellow-600'
     };
     return colors[color] || 'bg-gray-100 text-gray-600';
-  };
-
-  const getBorderColorClass = (color) => {
-    const colors = {
-      blue: 'border-blue-500', indigo: 'border-indigo-500', green: 'border-emerald-500',
-      orange: 'border-orange-500', pink: 'border-pink-500', yellow: 'border-yellow-500'
-    };
-    return colors[color] || 'border-gray-500';
   };
 
   const getIconForType = (type) => {
@@ -306,95 +293,129 @@ function Itinerary() {
     return <div className="p-10 text-center text-gray-500"><i className="ph ph-spinner-gap animate-spin text-2xl"></i></div>;
   }
 
-  return (
-    <div className="pb-24">
-      <div className="bg-white shadow-sm sticky top-0 z-10 p-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">行程表</h2>
-        <span className="text-xs font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">點擊文字即可編輯</span>
-      </div>
-      <div className="p-4 space-y-4">
-        {itineraryData.map((item) => {
-          const isExpanded = expandedDay === item.day;
-          return (
-            <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
-              <div 
-                className="p-5 flex gap-4 cursor-pointer hover:bg-gray-50"
-                onClick={() => toggleDay(item.day)}
-              >
-                <div className="flex flex-col items-center min-w-[50px]">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-2 transition-colors duration-300 ${isExpanded ? 'bg-blue-500 text-white shadow-md' : 'bg-blue-50 text-blue-500'}`}>
-                    <i className={`ph ${item.icon}`}></i>
-                  </div>
-                  <span className={`text-xs font-bold ${isExpanded ? 'text-blue-500' : 'text-gray-400'}`}>Day {item.day}</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <EditableText 
-                      value={item.title} 
-                      onSave={(newVal) => updateDayField(item.id, 'title', newVal)} 
-                      className="text-lg font-bold text-gray-800"
-                    />
-                    <i className={`ph ph-caret-down text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}></i>
-                  </div>
-                  <EditableText 
-                    value={item.date} 
-                    onSave={(newVal) => updateDayField(item.id, 'date', newVal)} 
-                    className="text-xs text-blue-500 font-bold block mb-1"
-                  />
-                  <EditableText 
-                    value={item.summary} 
-                    onSave={(newVal) => updateDayField(item.id, 'summary', newVal)} 
-                    className="text-gray-500 text-sm leading-relaxed" 
-                    isMultiline={true}
-                  />
-                </div>
-              </div>
+  const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
 
-              <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px] opacity-100 border-t border-gray-100' : 'max-h-0 opacity-0'} overflow-hidden bg-gray-50/50`}>
-                <div className="p-6 relative">
-                  <div className="absolute left-10 top-8 bottom-8 w-0.5 bg-gray-200"></div>
-                  <div className="space-y-6">
-                    {item.activities && item.activities.map((activity, idx) => (
-                      <div key={idx} className="relative flex gap-6 items-start">
-                        <div className="flex flex-col items-center w-10 shrink-0 relative z-10 pt-1">
-                          <EditableText 
-                            value={activity.time} 
-                            onSave={(newVal) => updateActivityField(item.id, item, idx, 'time', newVal)} 
-                            className="text-[10px] font-bold text-gray-400 mb-1 text-center w-12"
-                          />
-                          <div className={`w-3 h-3 rounded-full bg-white border-2 ${getBorderColorClass(activity.color)} mt-1`}></div>
-                        </div>
-                        
-                        <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                          <div className="flex items-start gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${getColorClass(activity.color)}`}>
-                              <i className={`ph ${getIconForType(activity.type)} text-lg`}></i>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <EditableText 
-                                value={activity.title} 
-                                onSave={(newVal) => updateActivityField(item.id, item, idx, 'title', newVal)} 
-                                className="font-bold text-gray-800 text-sm mb-1"
-                              />
-                              <div className="flex items-start gap-1 text-xs text-gray-500">
-                                <i className="ph ph-map-pin mt-0.5 shrink-0"></i> 
-                                <EditableText 
-                                  value={activity.location} 
-                                  onSave={(newVal) => updateActivityField(item.id, item, idx, 'location', newVal)} 
-                                  className="flex-1"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+  if (!currentDayData) return null;
+
+  return (
+    <div className="pb-24 bg-gray-50 min-h-screen">
+      {/* Hero Image */}
+      <div className="h-56 bg-gray-300 relative">
+        <img 
+          src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+          alt="Danang" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div className="absolute bottom-6 left-5 text-white z-10">
+          <h2 className="text-2xl font-bold mb-1">✨ 2026 越南家庭遊</h2>
+          <p className="text-sm opacity-90 flex items-center gap-1">
+            <i className="ph-fill ph-map-pin"></i> 峴港 • 會安 • 巴拿山
+          </p>
+        </div>
+      </div>
+
+      {/* Horizontal Day Selector */}
+      <div className="bg-white sticky top-0 z-20 shadow-sm border-b border-gray-100 overflow-x-auto hide-scrollbar flex">
+        {itineraryData.map(item => (
+          <button 
+            key={item.id}
+            onClick={() => setActiveDay(item.day)}
+            className={`flex-none px-5 py-3 flex flex-col items-center min-w-[80px] transition-colors relative ${activeDay === item.day ? 'text-blue-600' : 'text-gray-400'}`}
+          >
+            <span className="text-[10px] mb-1">{item.date.split(' ')[0]}</span>
+            <span className="text-sm font-bold whitespace-nowrap">第 {item.day} 天</span>
+            {activeDay === item.day && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Day Content */}
+      <div className="p-4">
+        {/* Quick Actions */}
+        <div className="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+           <div className="flex flex-col items-center gap-1">
+             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-airplane-tilt text-lg"></i></div>
+             <span className="text-[10px] text-gray-500 font-medium">找機票</span>
+           </div>
+           <div className="flex flex-col items-center gap-1">
+             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-buildings text-lg"></i></div>
+             <span className="text-[10px] text-gray-500 font-medium">飯店住宿</span>
+           </div>
+           <div className="flex flex-col items-center gap-1">
+             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-car text-lg"></i></div>
+             <span className="text-[10px] text-gray-500 font-medium">租車包車</span>
+           </div>
+           <div className="flex flex-col items-center gap-1">
+             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-ticket text-lg"></i></div>
+             <span className="text-[10px] text-gray-500 font-medium">景點門票</span>
+           </div>
+        </div>
+
+        {/* Day Header Info */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
+          <div className="absolute right-[-20px] top-[-20px] text-gray-50 opacity-50">
+            <i className={`ph-fill ${currentDayData.icon} text-[120px]`}></i>
+          </div>
+          <div className="relative z-10 flex items-start gap-3">
+            <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl shrink-0 mt-1">
+              <i className={`ph-fill ${currentDayData.icon}`}></i>
             </div>
-          );
-        })}
+            <div className="flex-1">
+              <EditableText 
+                value={currentDayData.title} 
+                onSave={(newVal) => updateDayField(currentDayData.id, 'title', newVal)} 
+                className="text-lg font-bold text-gray-800"
+              />
+              <EditableText 
+                value={currentDayData.summary} 
+                onSave={(newVal) => updateDayField(currentDayData.id, 'summary', newVal)} 
+                className="text-gray-500 text-xs mt-1" 
+                isMultiline={true}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline Activities */}
+        <div className="space-y-4">
+          {currentDayData.activities && currentDayData.activities.map((activity, idx) => (
+            <div key={idx} className="flex gap-3">
+               {/* Time column */}
+               <div className="w-12 pt-3 flex flex-col items-center shrink-0">
+                 <EditableText 
+                    value={activity.time} 
+                    onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'time', newVal)} 
+                    className="text-[10px] font-bold text-gray-500 text-center w-full"
+                 />
+               </div>
+
+               {/* Activity Card */}
+               <div className="flex-1 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-3 items-start">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${getColorClass(activity.color)}`}>
+                    <i className={`ph-fill ${getIconForType(activity.type)} text-xl`}></i>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <EditableText 
+                      value={activity.title} 
+                      onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'title', newVal)} 
+                      className="font-bold text-gray-800 text-sm mb-1"
+                    />
+                    <div className="flex items-start gap-1 text-xs text-gray-500">
+                      <i className="ph-fill ph-map-pin mt-0.5 shrink-0 text-red-400"></i> 
+                      <EditableText 
+                        value={activity.location} 
+                        onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'location', newVal)} 
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+               </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
