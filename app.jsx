@@ -229,6 +229,37 @@ function EditableText({ value, onSave, className, isMultiline = false }) {
   );
 }
 
+function WeatherWidget() {
+  const [weather, setWeather] = useState(null);
+  useEffect(() => {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=16.0678&longitude=108.2208&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code")
+      .then(res => res.json())
+      .then(data => setWeather(data.current))
+      .catch(() => setWeather({ temperature_2m: 28, relative_humidity_2m: 80, apparent_temperature: 31, weather_code: 1 }));
+  }, []);
+
+  if (!weather) return <div className="h-28 bg-gradient-to-br from-[#2b4c65] to-[#4a7c8e] rounded-xl animate-pulse m-4"></div>;
+
+  return (
+    <div className="bg-gradient-to-br from-[#2b4c65] to-[#4a7c8e] rounded-xl p-4 m-4 text-white shadow-md relative overflow-hidden">
+       <div className="relative z-10 flex justify-between items-start">
+         <div>
+           <p className="text-xs text-gray-200 mb-1">越南 峴港</p>
+           <h1 className="text-4xl font-bold mb-1">{Math.round(weather.temperature_2m)}°C</h1>
+           <p className="text-[10px] text-gray-200 mb-2">體感 {Math.round(weather.apparent_temperature)}°C · 濕度 {weather.relative_humidity_2m}%</p>
+           <div className="bg-white/20 text-[10px] px-2 py-1 rounded inline-block backdrop-blur-sm">
+             穿搭建議：夏季短袖 + 防曬薄外套
+           </div>
+         </div>
+         <div className="flex flex-col items-center mt-2">
+           <i className="ph-fill ph-sun text-4xl text-yellow-300 mb-1 drop-shadow-md"></i>
+           <span className="text-[10px]">Clear</span>
+         </div>
+       </div>
+    </div>
+  );
+}
+
 function Itinerary() {
   const [itineraryData, setItineraryData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -257,31 +288,16 @@ function Itinerary() {
 
   const updateDayField = async (docId, field, newValue) => {
     if (!db) return;
-    try {
-      await updateDoc(doc(db, "itinerary", docId), { [field]: newValue });
-    } catch (err) {
-      alert("更新失敗：" + err.message);
-    }
+    try { await updateDoc(doc(db, "itinerary", docId), { [field]: newValue }); } 
+    catch (err) { alert("更新失敗：" + err.message); }
   };
 
   const updateActivityField = async (docId, dayData, activityIndex, field, newValue) => {
     if (!db) return;
     const newActivities = [...dayData.activities];
     newActivities[activityIndex] = { ...newActivities[activityIndex], [field]: newValue };
-    try {
-      await updateDoc(doc(db, "itinerary", docId), { activities: newActivities });
-    } catch (err) {
-      alert("更新失敗：" + err.message);
-    }
-  };
-
-  const getColorClass = (color) => {
-    const colors = {
-      blue: 'bg-blue-100 text-blue-600', indigo: 'bg-indigo-100 text-indigo-600',
-      green: 'bg-emerald-100 text-emerald-600', orange: 'bg-orange-100 text-orange-600',
-      pink: 'bg-pink-100 text-pink-600', yellow: 'bg-yellow-100 text-yellow-600'
-    };
-    return colors[color] || 'bg-gray-100 text-gray-600';
+    try { await updateDoc(doc(db, "itinerary", docId), { activities: newActivities }); } 
+    catch (err) { alert("更新失敗：" + err.message); }
   };
 
   const getIconForType = (type) => {
@@ -289,171 +305,109 @@ function Itinerary() {
     return icons[type] || 'ph-map-pin';
   };
 
-  const getImageForType = (type, index) => {
-    const images = {
-      flight: [
-        'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&q=80',
-        'https://images.unsplash.com/photo-1542296332-2e4473faf563?w=500&q=80'
-      ],
-      hotel: [
-        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80',
-        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80'
-      ],
-      activity: [
-        'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=80',
-        'https://images.unsplash.com/photo-1528127269322-539801943592?w=500&q=80',
-        'https://images.unsplash.com/photo-1555921015-c2620a56bac7?w=500&q=80'
-      ],
-      meal: [
-        'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&q=80',
-        'https://images.unsplash.com/photo-1555126634-323283e090fa?w=500&q=80'
-      ]
-    };
-    const category = images[type] || images.activity;
-    return category[index % category.length];
-  };
-
-  if (loading) {
-    return <div className="p-10 text-center text-gray-500"><i className="ph ph-spinner-gap animate-spin text-2xl"></i></div>;
-  }
+  if (loading) return <div className="p-10 text-center text-gray-500"><i className="ph ph-spinner-gap animate-spin text-2xl"></i></div>;
 
   const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
-
   if (!currentDayData) return null;
 
   return (
-    <div className="pb-24 bg-gray-50 min-h-screen">
-      {/* Hero Image */}
-      <div className="h-56 bg-gray-300 relative">
-        <img 
-          src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-          alt="Danang" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-        <div className="absolute bottom-6 left-5 text-white z-10">
-          <h2 className="text-2xl font-bold mb-1">✨ 2026 越南家庭遊</h2>
-          <p className="text-sm opacity-90 flex items-center gap-1">
-            <i className="ph-fill ph-map-pin"></i> 峴港 • 會安 • 巴拿山
-          </p>
-        </div>
+    <div className="pb-24 bg-[#f5f6f8] min-h-screen">
+      {/* Header */}
+      <div className="bg-[#1E2336] text-white p-4 flex justify-between items-center sticky top-0 z-30">
+        <h2 className="text-lg font-bold tracking-wider">越南峴港 2026</h2>
+        <button className="bg-white/10 px-3 py-1 rounded text-xs font-bold border border-white/20">EN</button>
       </div>
+
+      <WeatherWidget />
 
       {/* Horizontal Day Selector */}
-      <div className="bg-white sticky top-0 z-20 shadow-sm border-b border-gray-100 overflow-x-auto hide-scrollbar flex">
-        {itineraryData.map(item => (
-          <button 
-            key={item.id}
-            onClick={() => setActiveDay(item.day)}
-            className={`flex-none px-5 py-3 flex flex-col items-center min-w-[80px] transition-colors relative ${activeDay === item.day ? 'text-blue-600' : 'text-gray-400'}`}
-          >
-            <span className="text-[10px] mb-1">{item.date.split(' ')[0]}</span>
-            <span className="text-sm font-bold whitespace-nowrap">第 {item.day} 天</span>
-            {activeDay === item.day && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
-            )}
-          </button>
-        ))}
+      <div className="bg-[#f5f6f8] sticky top-[60px] z-20 px-4 py-2 overflow-x-auto hide-scrollbar flex gap-3 border-b border-gray-200">
+        {itineraryData.map(item => {
+          const isActive = activeDay === item.day;
+          const dateParts = item.date.split(' ');
+          const dayNum = dateParts[0].split('/')[1]; 
+          const dayWeek = dateParts[1]?.replace('(', '')?.replace(')', '') || '';
+          
+          return (
+            <button 
+              key={item.id}
+              onClick={() => setActiveDay(item.day)}
+              className={`flex-none w-[52px] h-[60px] rounded-xl flex flex-col items-center justify-center transition-all ${isActive ? 'bg-[#1E2336] text-white shadow-md shadow-[#1E2336]/30' : 'bg-white text-[#1E2336] shadow-sm'}`}
+            >
+              <span className="text-[16px] font-extrabold leading-none mb-1">{dayNum}</span>
+              <span className={`text-[10px] font-bold ${isActive ? 'text-[#a5b4fc]' : 'text-[#60a5fa]'}`}>{dayWeek}</span>
+            </button>
+          )
+        })}
       </div>
 
-      {/* Day Content */}
       <div className="p-4">
-        {/* Quick Actions */}
-        <div className="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
-           <div className="flex flex-col items-center gap-1">
-             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-airplane-tilt text-lg"></i></div>
-             <span className="text-[10px] text-gray-500 font-medium">找機票</span>
-           </div>
-           <div className="flex flex-col items-center gap-1">
-             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-buildings text-lg"></i></div>
-             <span className="text-[10px] text-gray-500 font-medium">飯店住宿</span>
-           </div>
-           <div className="flex flex-col items-center gap-1">
-             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-car text-lg"></i></div>
-             <span className="text-[10px] text-gray-500 font-medium">租車包車</span>
-           </div>
-           <div className="flex flex-col items-center gap-1">
-             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-600"><i className="ph-fill ph-ticket text-lg"></i></div>
-             <span className="text-[10px] text-gray-500 font-medium">景點門票</span>
-           </div>
-        </div>
-
         {/* Day Header Info */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
-          <div className="absolute right-[-20px] top-[-20px] text-gray-50 opacity-50">
-            <i className={`ph-fill ${currentDayData.icon} text-[120px]`}></i>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="bg-[#1E2336] text-white text-[10px] font-bold px-2 py-1 rounded-md">第 {currentDayData.day} 天</span>
+            <span className="text-xs text-gray-500 font-bold">Phase 1 : 峴港都會 & 海灘</span>
           </div>
-          <div className="relative z-10 flex items-start gap-3">
-            <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl shrink-0 mt-1">
-              <i className={`ph-fill ${currentDayData.icon}`}></i>
-            </div>
-            <div className="flex-1">
-              <EditableText 
-                value={currentDayData.title} 
-                onSave={(newVal) => updateDayField(currentDayData.id, 'title', newVal)} 
-                className="text-lg font-bold text-gray-800"
-              />
-              <EditableText 
-                value={currentDayData.summary} 
-                onSave={(newVal) => updateDayField(currentDayData.id, 'summary', newVal)} 
-                className="text-gray-500 text-xs mt-1" 
-                isMultiline={true}
-              />
-            </div>
+          <div className="flex items-start gap-2">
+            <h2 className="text-lg font-bold text-[#1E2336] mb-1 flex-1">
+              {currentDayData.date.split(' ')[0]} <EditableText value={currentDayData.title} onSave={(val) => updateDayField(currentDayData.id, 'title', val)} className="inline-block ml-1"/>
+            </h2>
+          </div>
+          <div className="bg-yellow-50 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded inline-block mt-2">
+            ⚡ 包含 {currentDayData.activities?.length || 0} 個行程
           </div>
         </div>
 
-        {/* Timeline Activities */}
-        <div className="space-y-4">
+        {/* Edit Button */}
+        <div className="bg-[#1E2336] text-white rounded-xl py-3 text-center text-sm font-bold shadow-sm mb-6 flex items-center justify-center gap-2">
+           <i className="ph-fill ph-pencil-simple"></i> 點擊下方文字直接編輯
+        </div>
+
+        {/* Vertical Timeline */}
+        <div className="space-y-0 relative ml-1">
+          {/* Main vertical line */}
+          <div className="absolute left-[20px] top-6 bottom-10 w-[2px] bg-gray-200 z-0"></div>
+          
           {currentDayData.activities && currentDayData.activities.map((activity, idx) => (
-            <div key={idx} className="flex gap-3">
-               {/* Time column */}
+            <div key={idx} className="relative z-10 flex gap-4 pt-2 pb-4">
+               {/* Time & Dot */}
                <div className="w-12 pt-3 flex flex-col items-center shrink-0">
                  <EditableText 
                     value={activity.time} 
                     onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'time', newVal)} 
-                    className="text-[10px] font-bold text-gray-500 text-center w-full"
+                    className="text-[11px] font-extrabold text-gray-600 mb-2 w-full text-center bg-[#f5f6f8]"
                  />
+                 <div className="w-2.5 h-2.5 rounded-full bg-[#4a7c8e] ring-4 ring-[#f5f6f8] z-10 mt-1"></div>
                </div>
 
                {/* Activity Card */}
-               <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-                  {/* Activity Image */}
-                  <div className="h-32 bg-gray-200 relative">
-                    <img src={getImageForType(activity.type, idx)} alt="activity" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                    <div className={`absolute bottom-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center shadow-lg ${getColorClass(activity.color)}`}>
-                      <i className={`ph-fill ${getIconForType(activity.type)} text-lg`}></i>
+               <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                 <div className="flex justify-between items-start mb-2">
+                   <span className="bg-blue-50 text-[#4a7c8e] text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                     <i className={`ph-fill ${getIconForType(activity.type)}`}></i> 
+                     {activity.type === 'flight' ? '航班' : activity.type === 'hotel' ? '住宿' : activity.type === 'meal' ? '美食' : '景點'}
+                   </span>
+                 </div>
+                 
+                 <EditableText 
+                   value={activity.title} 
+                   onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'title', newVal)} 
+                   className="font-extrabold text-[#1E2336] text-base mb-1 block"
+                 />
+                 
+                 <div className="text-xs text-gray-500 mb-3 min-h-[16px]">
+                   <EditableText 
+                     value={activity.location} 
+                     onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'location', newVal)} 
+                   />
+                 </div>
+                 
+                 {/* Map Button (Visual) */}
+                 {activity.location && activity.type !== 'flight' && (
+                    <div className="w-fit bg-[#4a7c8e] text-white text-[10px] font-medium py-1.5 px-3 rounded-md flex items-center justify-center gap-1 shadow-sm mt-2">
+                      <i className="ph-fill ph-map-pin text-red-300"></i> 地圖
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <EditableText 
-                      value={activity.title} 
-                      onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'title', newVal)} 
-                      className="font-bold text-gray-800 text-sm mb-1"
-                    />
-                    <div className="flex items-start gap-1 text-xs text-gray-500 mb-3">
-                      <i className="ph-fill ph-map-pin mt-0.5 shrink-0 text-red-400"></i> 
-                      <EditableText 
-                        value={activity.location} 
-                        onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'location', newVal)} 
-                        className="flex-1"
-                      />
-                    </div>
-                    {/* Google Maps Embed */}
-                    {activity.location && activity.type !== 'flight' && (
-                      <div className="w-full h-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                        <iframe 
-                          width="100%" 
-                          height="100%" 
-                          frameBorder="0" 
-                          style={{ border: 0 }} 
-                          src={`https://maps.google.com/maps?q=${encodeURIComponent(activity.location)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                          allowFullScreen
-                        ></iframe>
-                      </div>
-                    )}
-                  </div>
+                 )}
                </div>
             </div>
           ))}
@@ -645,10 +599,10 @@ function App() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-6 py-3 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe">
         <button 
           onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'itinerary' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'itinerary' ? 'ph-fill ph-calendar-check' : 'ph ph-calendar-check'}`}></i>
           <span className="text-[10px] font-medium">行程</span>
@@ -656,26 +610,26 @@ function App() {
         
         <button 
           onClick={() => setActiveTab('flight')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'flight' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'flight' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'flight' ? 'ph-fill ph-airplane-tilt' : 'ph ph-airplane-tilt'}`}></i>
-          <span className="text-[10px] font-medium">航班住宿</span>
+          <span className="text-[10px] font-medium">交通/住宿</span>
         </button>
 
         <button 
           onClick={() => setActiveTab('notes')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'notes' ? 'text-yellow-600' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'notes' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'notes' ? 'ph-fill ph-notebook' : 'ph ph-notebook'}`}></i>
-          <span className="text-[10px] font-medium">筆記</span>
+          <span className="text-[10px] font-medium">出發準備</span>
         </button>
 
         <button 
           onClick={() => signOut(auth)}
-          className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition-colors"
+          className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-400 transition-colors"
         >
-          <i className="text-2xl ph ph-sign-out"></i>
-          <span className="text-[10px] font-medium">登出</span>
+          <i className="text-2xl ph-fill ph-warning-circle"></i>
+          <span className="text-[10px] font-medium">SOS/登出</span>
         </button>
       </div>
 
