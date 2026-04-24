@@ -289,6 +289,30 @@ function Itinerary() {
     return icons[type] || 'ph-map-pin';
   };
 
+  const getImageForType = (type, index) => {
+    const images = {
+      flight: [
+        'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&q=80',
+        'https://images.unsplash.com/photo-1542296332-2e4473faf563?w=500&q=80'
+      ],
+      hotel: [
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80',
+        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80'
+      ],
+      activity: [
+        'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=80',
+        'https://images.unsplash.com/photo-1528127269322-539801943592?w=500&q=80',
+        'https://images.unsplash.com/photo-1555921015-c2620a56bac7?w=500&q=80'
+      ],
+      meal: [
+        'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&q=80',
+        'https://images.unsplash.com/photo-1555126634-323283e090fa?w=500&q=80'
+      ]
+    };
+    const category = images[type] || images.activity;
+    return category[index % category.length];
+  };
+
   if (loading) {
     return <div className="p-10 text-center text-gray-500"><i className="ph ph-spinner-gap animate-spin text-2xl"></i></div>;
   }
@@ -393,17 +417,22 @@ function Itinerary() {
                </div>
 
                {/* Activity Card */}
-               <div className="flex-1 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-3 items-start">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${getColorClass(activity.color)}`}>
-                    <i className={`ph-fill ${getIconForType(activity.type)} text-xl`}></i>
+               <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+                  {/* Activity Image */}
+                  <div className="h-32 bg-gray-200 relative">
+                    <img src={getImageForType(activity.type, idx)} alt="activity" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div className={`absolute bottom-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center shadow-lg ${getColorClass(activity.color)}`}>
+                      <i className={`ph-fill ${getIconForType(activity.type)} text-lg`}></i>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="p-4">
                     <EditableText 
                       value={activity.title} 
                       onSave={(newVal) => updateActivityField(currentDayData.id, currentDayData, idx, 'title', newVal)} 
                       className="font-bold text-gray-800 text-sm mb-1"
                     />
-                    <div className="flex items-start gap-1 text-xs text-gray-500">
+                    <div className="flex items-start gap-1 text-xs text-gray-500 mb-3">
                       <i className="ph-fill ph-map-pin mt-0.5 shrink-0 text-red-400"></i> 
                       <EditableText 
                         value={activity.location} 
@@ -411,6 +440,19 @@ function Itinerary() {
                         className="flex-1"
                       />
                     </div>
+                    {/* Google Maps Embed */}
+                    {activity.location && activity.type !== 'flight' && (
+                      <div className="w-full h-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                        <iframe 
+                          width="100%" 
+                          height="100%" 
+                          frameBorder="0" 
+                          style={{ border: 0 }} 
+                          src={`https://maps.google.com/maps?q=${encodeURIComponent(activity.location)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    )}
                   </div>
                </div>
             </div>
