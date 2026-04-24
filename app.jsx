@@ -417,136 +417,138 @@ function Itinerary() {
   );
 }
 
-function FlightHotel() {
+function Souvenirs() {
   return (
-    <div className="pb-24">
-      <h2 className="text-2xl font-bold p-6 bg-white shadow-sm sticky top-0 z-10">航班與住宿</h2>
-      <div className="p-4 space-y-6">
-        
-        <section>
-          <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-gray-800">
-            <i className="ph-fill ph-airplane text-blue-500"></i> 航班資訊
-          </h3>
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <div className="flex justify-between items-center mb-4 border-b border-gray-50 pb-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold">TPE</div>
-                <div className="text-xs text-gray-500">台北</div>
-              </div>
-              <div className="flex-1 px-4 relative flex items-center justify-center">
-                <div className="h-px bg-gray-300 w-full absolute"></div>
-                <i className="ph-fill ph-airplane-right text-gray-400 bg-white px-2 relative z-10"></i>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">DAD</div>
-                <div className="text-xs text-gray-500">峴港</div>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">去程: 05/26 (二) 待定</p>
-            <p className="text-sm text-gray-600">回程: 06/03 (三) 待定</p>
-          </div>
-        </section>
-
-        <section>
-          <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-gray-800">
-            <i className="ph-fill ph-buildings text-indigo-500"></i> 住宿資訊 (2大1小)
-          </h3>
-          <div className="space-y-3">
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-indigo-500">
-              <h4 className="font-bold text-gray-800">峴港市區飯店 (前段)</h4>
-              <p className="text-xs text-gray-500 mb-2">05/26 - 05/29 (3晚)</p>
-              <p className="text-sm text-gray-600">尋找親子友善，靠近海灘或市區的飯店。</p>
-            </div>
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-yellow-500">
-              <h4 className="font-bold text-gray-800">會安渡假村</h4>
-              <p className="text-xs text-gray-500 mb-2">05/29 - 05/31 (2晚)</p>
-              <p className="text-sm text-gray-600">享受古鎮氛圍與泳池設施。</p>
-            </div>
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
-              <h4 className="font-bold text-gray-800">峴港高級海景渡假村 (後段)</h4>
-              <p className="text-xs text-gray-500 mb-2">05/31 - 06/03 (3晚)</p>
-              <p className="text-sm text-gray-600">旅程結尾的高級享受，含豐富兒童設施。</p>
-            </div>
-          </div>
-        </section>
-
+    <div className="pb-24 bg-[#f5f6f8] min-h-screen">
+      <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
+        <h2 className="text-2xl font-bold">推薦伴手禮</h2>
+      </div>
+      <div className="p-4 space-y-4">
+        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-orange-500">
+           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">帶皮腰果</h3>
+           <p className="text-sm text-gray-500 mb-2">越南特產，香脆可口，適合長輩。</p>
+           <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：Han Market 或 Lotte Mart</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-yellow-600">
+           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">G7 咖啡 / 滴漏咖啡</h3>
+           <p className="text-sm text-gray-500 mb-2">經典越式咖啡，伴手禮首選。</p>
+           <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：各大超市均有販售</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-green-500">
+           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">綠豆糕 / 椰子糖</h3>
+           <p className="text-sm text-gray-500 mb-2">在地傳統甜點，小朋友最愛。</p>
+        </div>
       </div>
     </div>
   );
 }
 
-function Notes({ user }) {
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
+function Transport() {
+  return (
+    <div className="pb-24 bg-[#f5f6f8] min-h-screen">
+      <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
+        <h2 className="text-2xl font-bold">交通資訊</h2>
+      </div>
+      <div className="p-4 space-y-4">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-green-100">
+           <div className="flex items-center gap-3 mb-3">
+             <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+               <i className="ph-fill ph-taxi text-2xl text-green-500"></i>
+             </div>
+             <div>
+               <h3 className="font-bold text-lg text-[#1E2336]">Grab 叫車</h3>
+               <p className="text-xs text-gray-500">市區移動首選</p>
+             </div>
+           </div>
+           <p className="text-sm text-gray-600 mb-3 leading-relaxed">綁定信用卡後直接叫車，價格透明，不會被坑。適合峴港市區內短程移動。</p>
+        </div>
+        
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+           <div className="flex items-center gap-3 mb-3">
+             <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+               <i className="ph-fill ph-car text-2xl text-blue-500"></i>
+             </div>
+             <div>
+               <h3 className="font-bold text-lg text-[#1E2336]">巴拿山 / 會安包車</h3>
+               <p className="text-xs text-gray-500">跨區或長程移動</p>
+             </div>
+           </div>
+           <p className="text-sm text-gray-600 leading-relaxed">跨城市移動（如峴港至會安、巴拿山）建議提前在 Klook 或 KKday 預訂專車接送，有冷氣且適合家庭。</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  useEffect(() => {
-    if (!db) return;
-    const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notesData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setNotes(notesData);
-    });
-    return () => unsubscribe();
-  }, []);
+function Preparation() {
+  const [items, setItems] = useState([
+    { id: 1, text: "護照 (效期需滿6個月)", checked: false },
+    { id: 2, text: "越南電子簽證 (e-Visa)", checked: false },
+    { id: 3, text: "網卡 / eSIM", checked: false },
+    { id: 4, text: "防曬乳、防蚊液", checked: false },
+    { id: 5, text: "常備藥品 (腸胃藥、感冒藥)", checked: false },
+    { id: 6, text: "薄外套 (巴拿山上較冷)", checked: false },
+    { id: 7, text: "美金 (到當地換越盾)", checked: false }
+  ]);
 
-  const handleAddNote = async (e) => {
-    e.preventDefault();
-    if (!newNote.trim() || !db) return;
-    try {
-      await addDoc(collection(db, "notes"), {
-        text: newNote,
-        author: user.displayName || user.email,
-        createdAt: serverTimestamp()
-      });
-      setNewNote("");
-    } catch (err) {
-      alert("Error adding note: " + err.message);
-    }
+  const toggleItem = (id) => {
+    setItems(items.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
   };
 
-  const handleDelete = async (id) => {
-    if(!db) return;
-    await deleteDoc(doc(db, "notes", id));
-  }
-
   return (
-    <div className="pb-24 flex flex-col h-screen">
-      <h2 className="text-2xl font-bold p-6 bg-white shadow-sm shrink-0">共用筆記</h2>
-      
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
-        {notes.length === 0 ? (
-          <p className="text-center text-gray-400 mt-10">尚無筆記，來新增一些餐廳或景點想法吧！</p>
-        ) : (
-          notes.map(note => (
-            <div key={note.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{note.author}</span>
-                <button onClick={() => handleDelete(note.id)} className="text-gray-400 hover:text-red-500">
-                  <i className="ph ph-trash"></i>
-                </button>
-              </div>
-              <p className="text-gray-700 text-sm whitespace-pre-wrap">{note.text}</p>
-            </div>
-          ))
-        )}
+    <div className="pb-24 bg-[#f5f6f8] min-h-screen">
+      <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
+        <h2 className="text-2xl font-bold">出發準備清單</h2>
       </div>
+      <div className="p-4 space-y-3">
+        {items.map(item => (
+          <div key={item.id} onClick={() => toggleItem(item.id)} className="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3 cursor-pointer transition-colors active:bg-gray-50">
+            <div className={`w-6 h-6 rounded-md flex items-center justify-center border ${item.checked ? 'bg-[#4a7c8e] border-[#4a7c8e]' : 'border-gray-300'}`}>
+              {item.checked && <i className="ph-bold ph-check text-white text-sm"></i>}
+            </div>
+            <span className={`font-bold ${item.checked ? 'text-gray-400 line-through' : 'text-[#1E2336]'}`}>{item.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      <div className="p-4 bg-white border-t border-gray-100 shrink-0 mb-16">
-        <form onSubmit={handleAddNote} className="flex gap-2">
-          <input
-            type="text"
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="新增餐廳或景點想法..."
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button type="submit" className="bg-blue-500 text-white w-12 rounded-xl flex items-center justify-center hover:bg-blue-600 transition-colors">
-            <i className="ph-bold ph-paper-plane-right"></i>
+function SOS({ onLogout }) {
+  return (
+    <div className="pb-24 bg-red-50 min-h-screen">
+      <div className="bg-red-600 text-white p-6 shadow-sm sticky top-0 z-10">
+        <h2 className="text-2xl font-bold flex items-center gap-2"><i className="ph-fill ph-warning"></i> 緊急救援 SOS</h2>
+      </div>
+      <div className="p-4 mt-2">
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <a href="tel:113" className="bg-white rounded-2xl p-5 shadow-sm border border-red-100 text-center active:bg-red-50 transition-colors">
+             <i className="ph-fill ph-police-car text-4xl text-red-500 mb-2 block"></i>
+             <h3 className="font-bold text-lg text-gray-800">當地警察</h3>
+             <p className="text-xs text-gray-500 font-bold bg-gray-100 py-1 rounded mt-1">直撥 113</p>
+          </a>
+          <a href="tel:115" className="bg-white rounded-2xl p-5 shadow-sm border border-red-100 text-center active:bg-red-50 transition-colors">
+             <i className="ph-fill ph-ambulance text-4xl text-red-500 mb-2 block"></i>
+             <h3 className="font-bold text-lg text-gray-800">救護車</h3>
+             <p className="text-xs text-gray-500 font-bold bg-gray-100 py-1 rounded mt-1">直撥 115</p>
+          </a>
+        </div>
+        
+        <a href="tel:+84-24-3833-6996" className="block bg-white rounded-2xl p-5 shadow-sm border border-gray-200 active:bg-gray-50 transition-colors mb-8 flex items-center gap-4">
+           <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+             <i className="ph-fill ph-buildings text-2xl text-blue-500"></i>
+           </div>
+           <div>
+             <h3 className="font-bold text-[15px] text-gray-800 leading-tight mb-1">駐越南台北經濟文化辦事處</h3>
+             <p className="text-xs text-gray-500">急難救助專線</p>
+           </div>
+        </a>
+
+        <div className="border-t border-red-200 pt-6">
+          <button onClick={onLogout} className="w-full bg-white border-2 border-gray-300 text-gray-700 py-4 rounded-xl font-bold shadow-sm flex items-center justify-center gap-2 active:bg-gray-50">
+            <i className="ph-bold ph-sign-out text-lg"></i> 登出帳號
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
@@ -584,14 +586,16 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'itinerary': return <Itinerary />;
-      case 'flight': return <FlightHotel />;
-      case 'notes': return <Notes user={user} />;
+      case 'souvenirs': return <Souvenirs />;
+      case 'transport': return <Transport />;
+      case 'preparation': return <Preparation />;
+      case 'sos': return <SOS onLogout={() => signOut(auth)} />;
       default: return <Itinerary />;
     }
   };
 
   return (
-    <div className="max-w-md mx-auto relative bg-gray-50 min-h-screen shadow-xl overflow-hidden">
+    <div className="max-w-md mx-auto relative bg-[#f5f6f8] min-h-screen shadow-xl overflow-hidden">
       
       {/* Main Content Area */}
       <div className="h-full overflow-y-auto hide-scrollbar">
@@ -599,37 +603,45 @@ function App() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-6 py-3 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe">
+      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-2 py-2 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe">
         <button 
           onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
           <i className={`text-2xl ${activeTab === 'itinerary' ? 'ph-fill ph-calendar-check' : 'ph ph-calendar-check'}`}></i>
-          <span className="text-[10px] font-medium">行程</span>
+          <span className="text-[10px] font-bold">行程</span>
         </button>
         
         <button 
-          onClick={() => setActiveTab('flight')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'flight' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('souvenirs')}
+          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'souvenirs' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
-          <i className={`text-2xl ${activeTab === 'flight' ? 'ph-fill ph-airplane-tilt' : 'ph ph-airplane-tilt'}`}></i>
-          <span className="text-[10px] font-medium">交通/住宿</span>
+          <i className={`text-2xl ${activeTab === 'souvenirs' ? 'ph-fill ph-shopping-bag' : 'ph ph-shopping-bag'}`}></i>
+          <span className="text-[10px] font-bold">伴手禮</span>
         </button>
 
         <button 
-          onClick={() => setActiveTab('notes')}
-          className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'notes' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('transport')}
+          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'transport' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
-          <i className={`text-2xl ${activeTab === 'notes' ? 'ph-fill ph-notebook' : 'ph ph-notebook'}`}></i>
-          <span className="text-[10px] font-medium">出發準備</span>
+          <i className={`text-2xl ${activeTab === 'transport' ? 'ph-fill ph-train' : 'ph ph-train'}`}></i>
+          <span className="text-[10px] font-bold">交通</span>
         </button>
 
         <button 
-          onClick={() => signOut(auth)}
-          className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-400 transition-colors"
+          onClick={() => setActiveTab('preparation')}
+          className={`flex-1 flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'preparation' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
         >
-          <i className="text-2xl ph-fill ph-warning-circle"></i>
-          <span className="text-[10px] font-medium">SOS/登出</span>
+          <i className={`text-2xl ${activeTab === 'preparation' ? 'ph-fill ph-check-square' : 'ph ph-check-square'}`}></i>
+          <span className="text-[10px] font-bold">出發準備</span>
+        </button>
+
+        <button 
+          onClick={() => setActiveTab('sos')}
+          className={`flex-1 flex flex-col items-center gap-1 py-1 transition-colors ${activeTab === 'sos' ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`}
+        >
+          <i className={`text-2xl ${activeTab === 'sos' ? 'ph-fill ph-first-aid' : 'ph ph-first-aid'}`}></i>
+          <span className="text-[10px] font-bold">SOS</span>
         </button>
       </div>
 
