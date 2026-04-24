@@ -649,7 +649,7 @@ function AiAssistant({ user }) {
       const repoUrl = "https://api.github.com/repos/willy126534/vietnam-trip-pwa/contents/app.jsx";
       
       const fileRes = await fetch(repoUrl, {
-        headers: { "Authorization": `token ${config.githubToken}` }
+        headers: { "Authorization": `token ${config.githubToken.trim()}` }
       });
       if (!fileRes.ok) throw new Error("取得原始碼失敗 (請確認 GitHub Token 權限)");
       const fileData = await fileRes.json();
@@ -658,7 +658,7 @@ function AiAssistant({ user }) {
       const sha = fileData.sha;
 
       setLoadingText("正在呼叫 Gemini 修改程式碼...");
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${config.geminiKey}`, {
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${config.geminiKey.trim()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -674,7 +674,10 @@ ${currentCode}`
         })
       });
       
-      if (!geminiRes.ok) throw new Error("呼叫 Gemini API 失敗，請確認 API Key");
+      if (!geminiRes.ok) {
+        const errorData = await geminiRes.json();
+        throw new Error(`Gemini API 失敗: ${errorData.error?.message || '未知錯誤'}`);
+      }
       const geminiData = await geminiRes.json();
       let newCode = geminiData.candidates[0].content.parts[0].text;
       
