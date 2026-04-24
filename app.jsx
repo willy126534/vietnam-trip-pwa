@@ -264,6 +264,7 @@ function Itinerary() {
   const [itineraryData, setItineraryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeDay, setActiveDay] = useState(1);
+  const [mapLocation, setMapLocation] = useState(null);
 
   useEffect(() => {
     if (!db) return;
@@ -402,17 +403,49 @@ function Itinerary() {
                    />
                  </div>
                  
-                 {/* Map Button (Visual) */}
+                 {/* Map Button */}
                  {activity.location && activity.type !== 'flight' && (
-                    <div className="w-fit bg-[#4a7c8e] text-white text-[10px] font-medium py-1.5 px-3 rounded-md flex items-center justify-center gap-1 shadow-sm mt-2">
+                    <button 
+                      onClick={() => setMapLocation(activity.location)}
+                      className="w-fit bg-[#4a7c8e] text-white text-[10px] font-medium py-1.5 px-3 rounded-md flex items-center justify-center gap-1 shadow-sm mt-2 hover:bg-[#3b6675] transition-colors"
+                    >
                       <i className="ph-fill ph-map-pin text-red-300"></i> 地圖
-                    </div>
+                    </button>
                  )}
                </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Map Modal */}
+      {mapLocation && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl relative">
+            <div className="bg-[#1E2336] text-white p-3 flex justify-between items-center">
+              <h3 className="font-bold text-sm truncate flex-1 flex items-center gap-2"><i className="ph-fill ph-map-pin text-red-400"></i> {mapLocation}</h3>
+              <button onClick={() => setMapLocation(null)} className="text-gray-300 hover:text-white p-1">
+                <i className="ph-bold ph-x text-lg"></i>
+              </button>
+            </div>
+            <div className="h-[400px] w-full bg-gray-100">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                style={{border:0}} 
+                src={`https://www.google.com/maps?q=${encodeURIComponent(mapLocation)}&output=embed`} 
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="p-3 bg-gray-50 flex justify-end">
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapLocation)}`} target="_blank" className="bg-[#4a7c8e] text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#3b6675] transition-colors">
+                 開啟 Google Maps <i className="ph-bold ph-arrow-square-out"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -557,49 +590,179 @@ function SOS({ onLogout }) {
 function AiAssistant({ user }) {
   const [requests, setRequests] = useState([]);
   const [newReq, setNewReq] = useState("");
+  const [config, setConfig] = useState({ geminiKey: '', githubToken: '' });
+  const [isConfiguring, setIsConfiguring] = useState(false);
+  const [loadingText, setLoadingText] = useState("");
 
   useEffect(() => {
     if (!db) return;
     const q = query(collection(db, "ai_requests"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setRequests(data);
+    const unsubscribeReq = onSnapshot(q, (snapshot) => {
+      setRequests(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
-    return () => unsubscribe();
+
+    const unsubscribeConfig = onSnapshot(doc(db, "system_config", "ai_keys"), (docSnap) => {
+      if (docSnap.exists()) {
+        setConfig(docSnap.data());
+      } else {
+        setIsConfiguring(true);
+      }
+    });
+
+    return () => { unsubscribeReq(); unsubscribeConfig(); };
   }, []);
+
+  const saveConfig = async (e) => {
+    e.preventDefault();
+    try {
+      await setDoc(doc(db, "system_config", "ai_keys"), config);
+      setIsConfiguring(false);
+      alert("金鑰儲存成功！");
+    } catch (err) {
+      alert("儲存失敗：" + err.message);
+    }
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newReq.trim() || !db) return;
+    if (!config.geminiKey || !config.githubToken) {
+      setIsConfiguring(true);
+      return alert("請先設定 Gemini API Key 與 GitHub Token！");
+    }
+
+    const requestText = newReq;
+    setNewReq("");
+    
+    let reqRef;
     try {
-      await addDoc(collection(db, "ai_requests"), {
-        text: newReq,
+      reqRef = await addDoc(collection(db, "ai_requests"), {
+        text: requestText,
         author: user.displayName || user.email,
         createdAt: serverTimestamp(),
-        status: 'pending' // pending, completed
+        status: 'processing'
       });
-      setNewReq("");
+    } catch(e) { console.error(e); }
+
+    try {
+      setLoadingText("正在取得最新原始碼...");
+      const repoUrl = "https://api.github.com/repos/willy126534/vietnam-trip-pwa/contents/app.jsx";
+      
+      const fileRes = await fetch(repoUrl, {
+        headers: { "Authorization": `token ${config.githubToken}` }
+      });
+      if (!fileRes.ok) throw new Error("取得原始碼失敗 (請確認 GitHub Token 權限)");
+      const fileData = await fileRes.json();
+      
+      const currentCode = decodeURIComponent(escape(atob(fileData.content)));
+      const sha = fileData.sha;
+
+      setLoadingText("正在呼叫 Gemini 修改程式碼...");
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${config.geminiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are an expert React developer. Modify the following React single-file code based on the user's request. 
+Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.
+USER REQUEST: ${requestText}
+CURRENT CODE:
+${currentCode}`
+            }]
+          }]
+        })
+      });
+      
+      if (!geminiRes.ok) throw new Error("呼叫 Gemini API 失敗，請確認 API Key");
+      const geminiData = await geminiRes.json();
+      let newCode = geminiData.candidates[0].content.parts[0].text;
+      
+      newCode = newCode.replace(/```jsx\n?/g, "").replace(/```\n?/g, "").trim();
+
+      setLoadingText("正在推送到 GitHub...");
+      const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
+
+      const updateRes = await fetch(repoUrl, {
+        method: "PUT",
+        headers: { 
+          "Authorization": `token ${config.githubToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: `AI Auto Update: ${requestText}`,
+          content: encodedCode,
+          sha: sha
+        })
+      });
+
+      if (!updateRes.ok) throw new Error("推送到 GitHub 失敗");
+
+      if (reqRef) {
+        await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'completed' });
+      }
+      setLoadingText("");
+      alert("修改成功！PWA 將在 1-2 分鐘後更新，請強制重新整理頁面。");
+
     } catch (err) {
-      alert("Error: " + err.message);
+      setLoadingText("");
+      if (reqRef) await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'error', error: err.message });
+      alert("發生錯誤: " + err.message);
     }
   };
 
+  if (isConfiguring) {
+    return (
+      <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8] p-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-10">
+           <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-purple-600"><i className="ph-fill ph-key"></i> 系統金鑰設定</h2>
+           <p className="text-xs text-gray-500 mb-6 leading-relaxed">這是讓 PWA 能夠「自我修改」的核心。金鑰會安全儲存在 Firebase 中，不會被推送到公開的 GitHub。</p>
+           <form onSubmit={saveConfig} className="space-y-4">
+             <div>
+               <label className="text-xs font-bold text-gray-700 block mb-1">Gemini API Key</label>
+               <input type="password" value={config.geminiKey || ''} onChange={e => setConfig({...config, geminiKey: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="AIzaSy..." required />
+             </div>
+             <div>
+               <label className="text-xs font-bold text-gray-700 block mb-1">GitHub Fine-Grained Token</label>
+               <input type="password" value={config.githubToken || ''} onChange={e => setConfig({...config, githubToken: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="github_pat_..." required />
+             </div>
+             <div className="pt-4 flex gap-2">
+                {config.geminiKey && <button type="button" onClick={() => setIsConfiguring(false)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">取消</button>}
+                <button type="submit" className="flex-1 bg-purple-600 text-white py-3 rounded-xl font-bold">儲存設定</button>
+             </div>
+           </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8]">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 shadow-sm shrink-0">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <i className="ph-fill ph-magic-wand"></i> AI 助理 (Antigravity)
-        </h2>
-        <p className="text-xs text-purple-100 mt-2">
-          在此輸入你想要的改動。當你回到電腦旁告訴我「執行」，我就會自動幫你改 Code 並且 Push！
-        </p>
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 shadow-sm shrink-0 flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <i className="ph-fill ph-magic-wand"></i> AI 工程師
+          </h2>
+          <p className="text-[10px] text-purple-100 mt-2 leading-tight">
+            輸入願望，PWA 會自動呼叫 Gemini 幫你改寫程式碼並推送到 Git。
+          </p>
+        </div>
+        <button onClick={() => setIsConfiguring(true)} className="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-colors shrink-0 ml-2">
+          <i className="ph-fill ph-gear text-xl"></i>
+        </button>
       </div>
       
+      {loadingText && (
+        <div className="bg-yellow-50 p-3 border-b border-yellow-100 flex items-center justify-center gap-2 text-yellow-700 text-sm font-bold">
+           <i className="ph ph-spinner-gap animate-spin text-xl"></i> {loadingText}
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
         {requests.length === 0 ? (
           <div className="text-center text-gray-400 mt-10">
             <i className="ph-fill ph-robot text-6xl text-gray-300 mb-2 block"></i>
-            目前沒有待處理的願望。<br/>想改什麼背景顏色或排版嗎？直接告訴我！
+            想要改什麼呢？<br/>例如：「把所有的藍色換成綠色」
           </div>
         ) : (
           requests.map(req => (
@@ -608,8 +771,10 @@ function AiAssistant({ user }) {
                 <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">{req.author}</span>
                 {req.status === 'completed' ? (
                   <span className="text-xs text-green-500 font-bold flex items-center gap-1"><i className="ph-bold ph-check"></i> 已完成</span>
+                ) : req.status === 'error' ? (
+                  <span className="text-xs text-red-500 font-bold flex items-center gap-1"><i className="ph-bold ph-warning"></i> 失敗</span>
                 ) : (
-                  <span className="text-xs text-orange-500 font-bold flex items-center gap-1"><i className="ph-bold ph-clock"></i> 等待 IDE 執行</span>
+                  <span className="text-xs text-orange-500 font-bold flex items-center gap-1"><i className="ph-bold ph-clock"></i> 處理中</span>
                 )}
               </div>
               <p className="text-gray-700 text-sm whitespace-pre-wrap">{req.text}</p>
@@ -624,10 +789,11 @@ function AiAssistant({ user }) {
             type="text"
             value={newReq}
             onChange={(e) => setNewReq(e.target.value)}
+            disabled={!!loadingText}
             placeholder="例如：把頂部導覽列改成紅色"
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
           />
-          <button type="submit" className="bg-purple-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-purple-700 transition-colors">
+          <button type="submit" disabled={!!loadingText} className="bg-purple-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-purple-700 transition-colors disabled:opacity-50">
             <i className="ph-bold ph-paper-plane-right"></i>
           </button>
         </form>
