@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const { useState, useEffect, useRef } = React;
 
@@ -17,7 +17,7 @@ if (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey !== "REPLACE_ME") {
 const WHITELIST = ['asianinvasiongap@gmail.com', 'asd093454@gmail.com'];
 
 // --- Data: Itinerary ---
-const ITINERARY = [
+const DEFAULT_ITINERARY = [
   { 
     day: 1, date: '05/26 (二)', title: '啟程與放鬆', summary: '抵達峴港，入住飯店並在海灘放鬆。', icon: 'ph-airplane-landing',
     activities: [
@@ -162,64 +162,161 @@ function LoginScreen({ onLogin }) {
   );
 }
 
+function EditableText({ value, onSave, className, isMultiline = false }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempValue, setTempValue] = useState(value);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    setTempValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    if (tempValue !== value) {
+      onSave(tempValue);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !isMultiline) {
+      handleSave();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setTempValue(value);
+    }
+  };
+
+  if (isEditing) {
+    return isMultiline ? (
+      <textarea
+        ref={inputRef}
+        value={tempValue}
+        onChange={e => setTempValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className={`w-full bg-blue-50/50 border border-blue-200 rounded px-1 outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
+        rows={3}
+      />
+    ) : (
+      <input
+        ref={inputRef}
+        type="text"
+        value={tempValue}
+        onChange={e => setTempValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className={`w-full bg-blue-50/50 border border-blue-200 rounded px-1 outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
+        onClick={e => e.stopPropagation()}
+      />
+    );
+  }
+
+  return (
+    <div 
+      onClick={(e) => { e.stopPropagation(); setIsEditing(true); }} 
+      className={`cursor-text hover:bg-yellow-50 rounded px-1 -mx-1 transition-colors border border-transparent hover:border-yellow-200 ${className}`}
+      title="點擊以編輯 (Click to edit)"
+    >
+      {value || <span className="text-gray-300 italic">點此輸入...</span>}
+    </div>
+  );
+}
+
 function Itinerary() {
   const [expandedDay, setExpandedDay] = useState(null);
+  const [itineraryData, setItineraryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!db) return;
+    const q = query(collection(db, "itinerary"), orderBy("day", "asc"));
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (snapshot.empty) {
+        try {
+          for (const item of DEFAULT_ITINERARY) {
+            await setDoc(doc(db, "itinerary", `day${item.day}`), item);
+          }
+        } catch (err) {
+          console.error("Error seeding itinerary:", err);
+        }
+      } else {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setItineraryData(data);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const updateDayField = async (docId, field, newValue) => {
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, "itinerary", docId), { [field]: newValue });
+    } catch (err) {
+      alert("更新失敗：" + err.message);
+    }
+  };
+
+  const updateActivityField = async (docId, dayData, activityIndex, field, newValue) => {
+    if (!db) return;
+    const newActivities = [...dayData.activities];
+    newActivities[activityIndex] = { ...newActivities[activityIndex], [field]: newValue };
+    try {
+      await updateDoc(doc(db, "itinerary", docId), { activities: newActivities });
+    } catch (err) {
+      alert("更新失敗：" + err.message);
+    }
+  };
 
   const toggleDay = (day) => {
-    if (expandedDay === day) {
-      setExpandedDay(null);
-    } else {
-      setExpandedDay(day);
-    }
+    if (expandedDay === day) setExpandedDay(null);
+    else setExpandedDay(day);
   };
 
   const getColorClass = (color) => {
     const colors = {
-      blue: 'bg-blue-100 text-blue-600',
-      indigo: 'bg-indigo-100 text-indigo-600',
-      green: 'bg-emerald-100 text-emerald-600',
-      orange: 'bg-orange-100 text-orange-600',
-      pink: 'bg-pink-100 text-pink-600',
-      yellow: 'bg-yellow-100 text-yellow-600'
+      blue: 'bg-blue-100 text-blue-600', indigo: 'bg-indigo-100 text-indigo-600',
+      green: 'bg-emerald-100 text-emerald-600', orange: 'bg-orange-100 text-orange-600',
+      pink: 'bg-pink-100 text-pink-600', yellow: 'bg-yellow-100 text-yellow-600'
     };
     return colors[color] || 'bg-gray-100 text-gray-600';
   };
 
   const getBorderColorClass = (color) => {
     const colors = {
-      blue: 'border-blue-500',
-      indigo: 'border-indigo-500',
-      green: 'border-emerald-500',
-      orange: 'border-orange-500',
-      pink: 'border-pink-500',
-      yellow: 'border-yellow-500'
+      blue: 'border-blue-500', indigo: 'border-indigo-500', green: 'border-emerald-500',
+      orange: 'border-orange-500', pink: 'border-pink-500', yellow: 'border-yellow-500'
     };
     return colors[color] || 'border-gray-500';
   };
 
   const getIconForType = (type) => {
-    const icons = {
-      flight: 'ph-airplane-tilt',
-      hotel: 'ph-bed',
-      activity: 'ph-camera',
-      meal: 'ph-fork-knife'
-    };
+    const icons = { flight: 'ph-airplane-tilt', hotel: 'ph-bed', activity: 'ph-camera', meal: 'ph-fork-knife' };
     return icons[type] || 'ph-map-pin';
   };
+
+  if (loading) {
+    return <div className="p-10 text-center text-gray-500"><i className="ph ph-spinner-gap animate-spin text-2xl"></i></div>;
+  }
 
   return (
     <div className="pb-24">
       <div className="bg-white shadow-sm sticky top-0 z-10 p-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">行程表</h2>
-        <span className="text-xs font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">9 Days Trip</span>
+        <span className="text-xs font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">點擊文字即可編輯</span>
       </div>
       <div className="p-4 space-y-4">
-        {ITINERARY.map((item) => {
+        {itineraryData.map((item) => {
           const isExpanded = expandedDay === item.day;
           return (
-            <div key={item.day} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
-              
-              {/* Card Header (Clickable) */}
+            <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
               <div 
                 className="p-5 flex gap-4 cursor-pointer hover:bg-gray-50"
                 onClick={() => toggleDay(item.day)}
@@ -232,42 +329,61 @@ function Itinerary() {
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
+                    <EditableText 
+                      value={item.title} 
+                      onSave={(newVal) => updateDayField(item.id, 'title', newVal)} 
+                      className="text-lg font-bold text-gray-800"
+                    />
                     <i className={`ph ph-caret-down text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}></i>
                   </div>
-                  <span className="text-xs text-blue-500 font-bold block mb-1">{item.date}</span>
-                  <p className="text-gray-500 text-sm leading-relaxed">{item.summary}</p>
+                  <EditableText 
+                    value={item.date} 
+                    onSave={(newVal) => updateDayField(item.id, 'date', newVal)} 
+                    className="text-xs text-blue-500 font-bold block mb-1"
+                  />
+                  <EditableText 
+                    value={item.summary} 
+                    onSave={(newVal) => updateDayField(item.id, 'summary', newVal)} 
+                    className="text-gray-500 text-sm leading-relaxed" 
+                    isMultiline={true}
+                  />
                 </div>
               </div>
 
-              {/* Expanded Content (Timeline) */}
-              <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[1000px] opacity-100 border-t border-gray-100' : 'max-h-0 opacity-0'} overflow-hidden bg-gray-50/50`}>
+              <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px] opacity-100 border-t border-gray-100' : 'max-h-0 opacity-0'} overflow-hidden bg-gray-50/50`}>
                 <div className="p-6 relative">
-                  {/* Vertical Line */}
                   <div className="absolute left-10 top-8 bottom-8 w-0.5 bg-gray-200"></div>
-                  
                   <div className="space-y-6">
-                    {item.activities.map((activity, idx) => (
+                    {item.activities && item.activities.map((activity, idx) => (
                       <div key={idx} className="relative flex gap-6 items-start">
-                        {/* Timeline Dot */}
                         <div className="flex flex-col items-center w-10 shrink-0 relative z-10 pt-1">
-                          <span className="text-[10px] font-bold text-gray-400 mb-1">{activity.time}</span>
-                          <div className={`w-3 h-3 rounded-full bg-white border-2 ${getBorderColorClass(activity.color)}`}></div>
+                          <EditableText 
+                            value={activity.time} 
+                            onSave={(newVal) => updateActivityField(item.id, item, idx, 'time', newVal)} 
+                            className="text-[10px] font-bold text-gray-400 mb-1 text-center w-12"
+                          />
+                          <div className={`w-3 h-3 rounded-full bg-white border-2 ${getBorderColorClass(activity.color)} mt-1`}></div>
                         </div>
                         
-                        {/* Activity Card */}
                         <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                           <div className="flex items-start gap-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${getColorClass(activity.color)}`}>
                               <i className={`ph ${getIconForType(activity.type)} text-lg`}></i>
                             </div>
-                            <div>
-                              <h4 className="font-bold text-gray-800 text-sm mb-1">{activity.title}</h4>
-                              {activity.location && (
-                                <p className="text-xs text-gray-500 flex items-center gap-1">
-                                  <i className="ph ph-map-pin"></i> {activity.location}
-                                </p>
-                              )}
+                            <div className="flex-1 min-w-0">
+                              <EditableText 
+                                value={activity.title} 
+                                onSave={(newVal) => updateActivityField(item.id, item, idx, 'title', newVal)} 
+                                className="font-bold text-gray-800 text-sm mb-1"
+                              />
+                              <div className="flex items-start gap-1 text-xs text-gray-500">
+                                <i className="ph ph-map-pin mt-0.5 shrink-0"></i> 
+                                <EditableText 
+                                  value={activity.location} 
+                                  onSave={(newVal) => updateActivityField(item.id, item, idx, 'location', newVal)} 
+                                  className="flex-1"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
