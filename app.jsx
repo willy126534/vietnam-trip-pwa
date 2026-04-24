@@ -18,15 +18,104 @@ const WHITELIST = ['asianinvasiongap@gmail.com', 'asd093454@gmail.com'];
 
 // --- Data: Itinerary ---
 const ITINERARY = [
-  { day: 1, date: '05/26 (二)', title: '啟程與放鬆', desc: '台北 (TPE) 飛往 峴港 (Da Nang)。抵達後專車接送至飯店，下午於飯店泳池或美溪沙灘玩沙放鬆。', icon: 'ph-airplane-landing' },
-  { day: 2, date: '05/27 (三)', title: '市區輕鬆遊', desc: '早上參觀粉紅教堂 (Da Nang Cathedral)，下午逛漢市場 (Han Market) 周邊，品嚐當地越式河粉。', icon: 'ph-buildings' },
-  { day: 3, date: '05/28 (四)', title: '巴拿山一日遊', desc: '搭乘世界最長纜車，參觀黃金佛手橋，並在室內遊樂園 (Fantasy Park) 讓小孩玩樂。', icon: 'ph-mountains' },
-  { day: 4, date: '05/29 (五)', title: '前進會安', desc: '早上包車前往會安 (Hoi An)。入住會安渡假村，下午在飯店午休，傍晚漫步會安古鎮，欣賞夜間燈籠。', icon: 'ph-car' },
-  { day: 5, date: '05/30 (六)', title: '椰林竹籃船', desc: '早上體驗迦南島 (Cam Thanh) 椰林竹籃船 (Basket Boat)，非常適合小孩。下午自由活動。', icon: 'ph-boat' },
-  { day: 6, date: '05/31 (日)', title: '文化體驗', desc: '早上參加簡單的傳統燈籠製作課程或在古鎮咖啡廳休息。下午包車返回峴港，入住海景渡假村。', icon: 'ph-lantern' },
-  { day: 7, date: '06/01 (一)', title: '渡假村放鬆', desc: '全日享受飯店設施、親子遊戲室，傍晚可至海邊散步看夕陽。', icon: 'ph-swimming-pool' },
-  { day: 8, date: '06/02 (二)', title: '亞洲公園', desc: '傍晚前往亞洲公園搭乘巨大的太陽摩天輪 (Sun Wheel)，園區寬廣適合小孩跑跳。', icon: 'ph-ferris-wheel' },
-  { day: 9, date: '06/03 (三)', title: '滿載而歸', desc: '早上採買伴手禮，前往峴港機場 (DAD) 搭機返回台北 (TPE)，結束愉快旅程。', icon: 'ph-airplane-takeoff' }
+  { 
+    day: 1, date: '05/26 (二)', title: '啟程與放鬆', summary: '抵達峴港，入住飯店並在海灘放鬆。', icon: 'ph-airplane-landing',
+    activities: [
+      { time: '10:00', type: 'flight', title: '搭機前往峴港', location: 'TPE -> DAD (具體航班待定)', color: 'blue' },
+      { time: '14:00', type: 'hotel', title: '抵達飯店 Check-in', location: '峴港市區 (親子友善飯店)', color: 'indigo' },
+      { time: '16:00', type: 'activity', title: '美溪沙灘玩沙', location: 'My Khe Beach', color: 'green' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange' }
+    ]
+  },
+  { 
+    day: 2, date: '05/27 (三)', title: '市區輕鬆遊', summary: '市區觀光與品嚐當地美食。', icon: 'ph-buildings',
+    activities: [
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
+      { time: '10:30', type: 'activity', title: '粉紅教堂拍照', location: 'Da Nang Cathedral', color: 'pink' },
+      { time: '12:00', type: 'meal', title: '午餐：越式河粉', location: 'Pho 29 或周邊', color: 'orange' },
+      { time: '14:00', type: 'activity', title: '漢市場周邊散步', location: 'Han Market', color: 'green' },
+      { time: '16:00', type: 'hotel', title: '回飯店午休', location: '避免小孩太累', color: 'indigo' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '市區餐廳', color: 'orange' }
+    ]
+  },
+  { 
+    day: 3, date: '05/28 (四)', title: '巴拿山一日遊', summary: '搭乘世界最長纜車與遊樂園放電。', icon: 'ph-mountains',
+    activities: [
+      { time: '08:30', type: 'activity', title: '包車前往巴拿山', location: 'Ba Na Hills', color: 'green' },
+      { time: '09:30', type: 'activity', title: '搭乘纜車 & 黃金佛手橋', location: 'Golden Bridge', color: 'yellow' },
+      { time: '12:00', type: 'meal', title: '午餐：山上自助餐', location: 'Arapang 或其他餐廳', color: 'orange' },
+      { time: '13:30', type: 'activity', title: 'Fantasy Park 室內遊樂園', location: '適合小孩的遊樂設施', color: 'pink' },
+      { time: '16:00', type: 'activity', title: '搭纜車下山', location: '', color: 'green' },
+      { time: '18:00', type: 'meal', title: '晚餐', location: '返回市區', color: 'orange' }
+    ]
+  },
+  { 
+    day: 4, date: '05/29 (五)', title: '前進會安', summary: '移動至會安並享受古鎮夜景。', icon: 'ph-car',
+    activities: [
+      { time: '10:00', type: 'activity', title: '包車前往會安', location: '車程約 45 分鐘', color: 'green' },
+      { time: '11:00', type: 'hotel', title: '抵達會安渡假村 Check-in', location: '會安', color: 'indigo' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '會安特色美食', color: 'orange' },
+      { time: '14:00', type: 'hotel', title: '飯店午休 / 泳池玩水', location: '飯店內', color: 'indigo' },
+      { time: '16:30', type: 'activity', title: '漫步會安古鎮', location: 'Hoi An Ancient Town', color: 'green' },
+      { time: '18:30', type: 'activity', title: '欣賞夜間燈籠與晚餐', location: '秋盆河畔', color: 'pink' }
+    ]
+  },
+  { 
+    day: 5, date: '05/30 (六)', title: '椰林竹籃船', summary: '有趣的生態體驗，非常適合小孩。', icon: 'ph-boat',
+    activities: [
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
+      { time: '10:00', type: 'activity', title: '迦南島椰林竹籃船', location: 'Cam Thanh (約 1 小時)', color: 'blue' },
+      { time: '12:00', type: 'meal', title: '當地午餐', location: '迦南島周邊', color: 'orange' },
+      { time: '14:00', type: 'hotel', title: '返回飯店休息', location: '避免午後高溫', color: 'indigo' },
+      { time: '16:30', type: 'activity', title: '自由活動', location: '可再次逛古鎮或在飯店休息', color: 'green' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '會安', color: 'orange' }
+    ]
+  },
+  { 
+    day: 6, date: '05/31 (日)', title: '文化體驗', summary: '體驗當地文化並返回峴港海景飯店。', icon: 'ph-lantern',
+    activities: [
+      { time: '09:30', type: 'activity', title: '傳統燈籠製作體驗 (簡單版)', location: '會安古鎮內', color: 'pink' },
+      { time: '12:00', type: 'meal', title: '午餐', location: '古鎮咖啡廳', color: 'orange' },
+      { time: '14:00', type: 'activity', title: '包車返回峴港', location: '', color: 'green' },
+      { time: '15:00', type: 'hotel', title: '入住海景渡假村', location: '峴港海灘區', color: 'indigo' },
+      { time: '16:00', type: 'hotel', title: '享受飯店設施', location: '親子遊戲室或泳池', color: 'blue' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店內或周邊', color: 'orange' }
+    ]
+  },
+  { 
+    day: 7, date: '06/01 (一)', title: '渡假村放鬆', summary: '全日享受高級飯店設施與海灘。', icon: 'ph-swimming-pool',
+    activities: [
+      { time: '09:00', type: 'meal', title: '飯店豐盛早餐', location: '飯店內', color: 'orange' },
+      { time: '10:30', type: 'hotel', title: '玩水 / 兒童俱樂部', location: '飯店內', color: 'blue' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '飯店內或叫外送', color: 'orange' },
+      { time: '14:00', type: 'hotel', title: '午休', location: '飯店內', color: 'indigo' },
+      { time: '16:30', type: 'activity', title: '海邊散步看夕陽', location: '私人海灘', color: 'green' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '', color: 'orange' }
+    ]
+  },
+  { 
+    day: 8, date: '06/02 (二)', title: '亞洲公園', summary: '傍晚前往亞洲公園搭乘摩天輪。', icon: 'ph-ferris-wheel',
+    activities: [
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
+      { time: '10:30', type: 'hotel', title: '飯店設施放鬆', location: '', color: 'blue' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '', color: 'orange' },
+      { time: '14:00', type: 'hotel', title: '午休', location: '', color: 'indigo' },
+      { time: '16:00', type: 'activity', title: '前往亞洲公園', location: 'Asia Park', color: 'pink' },
+      { time: '17:30', type: 'activity', title: '搭乘太陽摩天輪', location: 'Sun Wheel', color: 'yellow' },
+      { time: '19:00', type: 'meal', title: '晚餐', location: '園區或市區', color: 'orange' }
+    ]
+  },
+  { 
+    day: 9, date: '06/03 (三)', title: '滿載而歸', summary: '採買伴手禮並搭機返回台北。', icon: 'ph-airplane-takeoff',
+    activities: [
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
+      { time: '10:00', type: 'activity', title: '整理行李 & Check-out', location: '飯店內', color: 'indigo' },
+      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '市區', color: 'orange' },
+      { time: '14:00', type: 'flight', title: '前往峴港機場', location: 'DAD', color: 'blue' },
+      { time: '16:00', type: 'flight', title: '搭機返回台北', location: 'DAD -> TPE', color: 'blue' }
+    ]
+  }
 ];
 
 // --- Components ---
@@ -74,27 +163,122 @@ function LoginScreen({ onLogin }) {
 }
 
 function Itinerary() {
+  const [expandedDay, setExpandedDay] = useState(null);
+
+  const toggleDay = (day) => {
+    if (expandedDay === day) {
+      setExpandedDay(null);
+    } else {
+      setExpandedDay(day);
+    }
+  };
+
+  const getColorClass = (color) => {
+    const colors = {
+      blue: 'bg-blue-100 text-blue-600',
+      indigo: 'bg-indigo-100 text-indigo-600',
+      green: 'bg-emerald-100 text-emerald-600',
+      orange: 'bg-orange-100 text-orange-600',
+      pink: 'bg-pink-100 text-pink-600',
+      yellow: 'bg-yellow-100 text-yellow-600'
+    };
+    return colors[color] || 'bg-gray-100 text-gray-600';
+  };
+
+  const getBorderColorClass = (color) => {
+    const colors = {
+      blue: 'border-blue-500',
+      indigo: 'border-indigo-500',
+      green: 'border-emerald-500',
+      orange: 'border-orange-500',
+      pink: 'border-pink-500',
+      yellow: 'border-yellow-500'
+    };
+    return colors[color] || 'border-gray-500';
+  };
+
+  const getIconForType = (type) => {
+    const icons = {
+      flight: 'ph-airplane-tilt',
+      hotel: 'ph-bed',
+      activity: 'ph-camera',
+      meal: 'ph-fork-knife'
+    };
+    return icons[type] || 'ph-map-pin';
+  };
+
   return (
     <div className="pb-24">
-      <h2 className="text-2xl font-bold p-6 bg-white shadow-sm sticky top-0 z-10">行程表</h2>
+      <div className="bg-white shadow-sm sticky top-0 z-10 p-6 flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-800">行程表</h2>
+        <span className="text-xs font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">9 Days Trip</span>
+      </div>
       <div className="p-4 space-y-4">
-        {ITINERARY.map((item) => (
-          <div key={item.day} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex gap-4">
-            <div className="flex flex-col items-center min-w-[50px]">
-              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-2">
-                <i className={`ph ${item.icon}`}></i>
+        {ITINERARY.map((item) => {
+          const isExpanded = expandedDay === item.day;
+          return (
+            <div key={item.day} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
+              
+              {/* Card Header (Clickable) */}
+              <div 
+                className="p-5 flex gap-4 cursor-pointer hover:bg-gray-50"
+                onClick={() => toggleDay(item.day)}
+              >
+                <div className="flex flex-col items-center min-w-[50px]">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-2 transition-colors duration-300 ${isExpanded ? 'bg-blue-500 text-white shadow-md' : 'bg-blue-50 text-blue-500'}`}>
+                    <i className={`ph ${item.icon}`}></i>
+                  </div>
+                  <span className={`text-xs font-bold ${isExpanded ? 'text-blue-500' : 'text-gray-400'}`}>Day {item.day}</span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
+                    <i className={`ph ph-caret-down text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}></i>
+                  </div>
+                  <span className="text-xs text-blue-500 font-bold block mb-1">{item.date}</span>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.summary}</p>
+                </div>
               </div>
-              <span className="text-xs font-bold text-gray-400">Day {item.day}</span>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-2 mb-1">
-                <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
-                <span className="text-xs text-blue-500 font-medium">{item.date}</span>
+
+              {/* Expanded Content (Timeline) */}
+              <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[1000px] opacity-100 border-t border-gray-100' : 'max-h-0 opacity-0'} overflow-hidden bg-gray-50/50`}>
+                <div className="p-6 relative">
+                  {/* Vertical Line */}
+                  <div className="absolute left-10 top-8 bottom-8 w-0.5 bg-gray-200"></div>
+                  
+                  <div className="space-y-6">
+                    {item.activities.map((activity, idx) => (
+                      <div key={idx} className="relative flex gap-6 items-start">
+                        {/* Timeline Dot */}
+                        <div className="flex flex-col items-center w-10 shrink-0 relative z-10 pt-1">
+                          <span className="text-[10px] font-bold text-gray-400 mb-1">{activity.time}</span>
+                          <div className={`w-3 h-3 rounded-full bg-white border-2 ${getBorderColorClass(activity.color)}`}></div>
+                        </div>
+                        
+                        {/* Activity Card */}
+                        <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${getColorClass(activity.color)}`}>
+                              <i className={`ph ${getIconForType(activity.type)} text-lg`}></i>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-gray-800 text-sm mb-1">{activity.title}</h4>
+                              {activity.location && (
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <i className="ph ph-map-pin"></i> {activity.location}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
