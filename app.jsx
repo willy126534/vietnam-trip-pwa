@@ -658,7 +658,7 @@ function AiAssistant({ user }) {
       const sha = fileData.sha;
 
       setLoadingText("正在呼叫 Gemini 修改程式碼...");
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${config.geminiKey.trim()}`, {
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.geminiKey.trim()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
