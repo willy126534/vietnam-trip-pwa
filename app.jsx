@@ -25,7 +25,7 @@ const DEFAULT_ITINERARY = [
       { time: '10:00', type: 'flight', title: '搭機前往峴港', location: 'TPE -> DAD (具體航班待定)', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'hotel', title: '抵達飯店 Check-in', location: '峴港市區 (親子友善飯店)', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '16:00', type: 'activity', title: '美溪沙灘玩沙', location: 'My Khe Beach', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1627883515828-e4b3706c9a9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fG15JTIwa2hlJTIwYmVhY2h8ZW58MHx8fHwxNzE4MjU4OTc4fDA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXtnuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
@@ -78,7 +78,7 @@ const DEFAULT_ITINERARY = [
       { time: '09:30', type: 'activity', title: '傳統燈籠製作體驗 (簡單版)', location: '會安古鎮內', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1567117565972-2435e76d3338?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuJTIwbWFraW5nfGVufDB8fHx8MTcxODI1OTUxMHww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:00', type: 'meal', title: '午餐', location: '古鎮咖啡廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1561081546-24e0b027c442?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8aG9pJTIwYW4lMjBjYWZlcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTk2MTZ8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'activity', title: '包車返回峴港', location: '', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1544465595-5807c4270e5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyJTIwdHJhdmVsfGVufDB8fHx8MTcxODI1OTMyOHww&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '15:00', type: 'hotel', title: '入住海景渡假村', location: '峴港海灘區', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '15:00', type: 'hotel', title: '入住海景渡假村', location: '峴港海灘區', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8s{eaJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '16:00', type: 'hotel', title: '享受飯店設施', location: '親子遊戲室或泳池', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '18:30', type: 'meal', title: '晚餐', location: '飯店內或周邊', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
@@ -101,8 +101,8 @@ const DEFAULT_ITINERARY = [
       { time: '10:30', type: 'hotel', title: '飯店設施放鬆', location: '', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:30', type: 'meal', title: '午餐', location: '', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a42322?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVmZmV0JTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkyMzV8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'hotel', title: '午休', location: '', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '16:00', type: 'activity', title: '前往亞洲公園', location: 'Asia Park', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1503970003010-8b63e80357d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8QXNpYSUyMFBhcmt8ZW58MHx8fHwxNzE4MjU5ODIxfDA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '17:30', type: 'activity', title: '搭乘太陽摩天輪', location: 'Sun Wheel', color: 'yellow', imageUrl: 'https://images.unsplash.com/photo-1522075591965-ee449646b528?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8U3VuJTIwV2hlZWwlMjBEYW5hbmd8ZW58MHx8fHwxNzE4MjU5ODQxfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'activity', title: '前往亞洲公園', location: 'Asia Park', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1503970003010-8b63e80357d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8QXNpYSUyMFBhcmt8ZW5wwfHx8fDE3MTgyNTk4MjF8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '17:30', type: 'activity', title: '搭乘太陽摩天輪', location: 'Sun Wheel', color: 'yellow', imageUrl: 'https://images.unsplash.com/photo-1522075591965-ee449646b528?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8U3VuJTIwV2hlZWwlMjBEYW5hbmf8fHwxNzE4MjU5ODQxfDA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '19:00', type: 'meal', title: '晚餐', location: '園區或市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
@@ -111,7 +111,7 @@ const DEFAULT_ITINERARY = [
     activities: [
       { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '10:00', type: 'activity', title: '整理行李 & Check-out', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1542838132-ff45b3a3250b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmllbmFtZXNlJTIwc2hvcHBpbmclMjBtYXJrZXR8ZW58MHx8fHwxNzE4MjU5ODczfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1542838132-ff45b3a3250b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmllbmFtZXNlJTIwc2hvcHBpbmclMjBtYXJrZXR8ZW5wwfHx8fDE3MTgyNTk4NzN8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:30', type: 'meal', title: '午餐', location: '市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'flight', title: '前往峴港機場', location: 'DAD', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '16:00', type: 'flight', title: '搭機返回台北', location: 'DAD -> TPE', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' }
@@ -659,7 +659,7 @@ function Souvenirs() {
         {!loadingAi && !searchTerm.trim() && aiRecommendations.length === 0 && (
           <div className="space-y-4">
             <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-orange-500 flex items-start gap-4">
-                <img src="https://images.unsplash.com/photo-1595185966956-f844007d3536?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="帶皮腰果" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/77/Salted-Cashew-Nuts.jpg" alt="帶皮腰果" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
                 <div className="flex-1">
                     <h3 className="font-bold text-lg mb-2 text-[#1E2336]">帶皮腰果</h3>
                     <p className="text-sm text-gray-500 mb-2">越南特產，香脆可口，適合長輩。</p>
@@ -667,7 +667,7 @@ function Souvenirs() {
                 </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-yellow-600 flex items-start gap-4">
-                <img src="https://images.unsplash.com/photo-1520624021703-0c464efc96cb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="G7 咖啡" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Trung_Nguy%C3%AAn_G7_Coffee_%28instant_coffee%29.jpg" alt="G7 咖啡" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
                 <div className="flex-1">
                     <h3 className="font-bold text-lg mb-2 text-[#1E2336]">G7 咖啡 / 滴漏咖啡</h3>
                     <p className="text-sm text-gray-500 mb-2">經典越式咖啡，伴手禮首選。</p>
@@ -675,7 +675,7 @@ function Souvenirs() {
                 </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-green-500 flex items-start gap-4">
-                <img src="https://images.unsplash.com/photo-1582239328574-e3fb6b8e39f3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="綠豆糕" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/B%C3%A1nh_%C4%91%E1%BA%ADu_xanh.jpg" alt="綠豆糕" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
                 <div className="flex-1">
                     <h3 className="font-bold text-lg mb-2 text-[#1E2336]">綠豆糕 / 椰子糖</h3>
                     <p className="text-sm text-gray-500 mb-2">在地傳統甜點，小朋友最愛。</p>
@@ -883,7 +883,7 @@ function AiAssistant({ user }) {
       const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
       let newCode = await callAI(model, prompt, config.geminiKey); // Pass geminiKey here
       // Robustly remove markdown code blocks
-      newCode = newCode.replace(/```jsx\n?/g, "").replace(/```javascript\n?/g, "").replace(/```\n?/g, "").trim();
+      newCode = newCode.replace(/\n?/g, "").replace(/\n?/g, "").replace(/\n?/g, "").trim();
 
       setLoadingText("正在推送到 GitHub...");
       const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
