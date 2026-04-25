@@ -118,6 +118,42 @@ const DEFAULT_ITINERARY = [
   }
 ];
 
+// --- AI Models Configuration ---
+const AI_MODELS = [
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash ⚡' },
+  { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro 🧠' },
+  { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+  { value: 'ollama/gemma4', label: 'Ollama Gemma4 (本機)' },
+];
+
+// --- Global AI Call Helper Function ---
+async function callAI(model, prompt, geminiKey) {
+    if (model.startsWith('ollama/')) {
+      const ollamaModel = model.replace('ollama/', '');
+      const res = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: ollamaModel, prompt, stream: false })
+      });
+      if (!res.ok) throw new Error('Ollama 呼叫失敗，請確認 Ollama 正在執行 (port 11434)。');
+      const data = await res.json();
+      return data.response;
+    } else {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(`Gemini API 失敗: ${errData.error?.message || '未知錯誤'}`);
+      }
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+}
+
+
 // --- Components ---
 
 function LoginScreen({ onLogin }) {
@@ -451,30 +487,198 @@ function Itinerary() {
 }
 
 function Souvenirs() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [aiRecommendations, setAiRecommendations] = useState([]);
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [errorAi, setErrorAi] = useState('');
+  const [config, setConfig] = useState({ geminiKey: '', aiModel: 'gemini-2.5-flash' });
+  const [isConfiguring, setIsConfiguring] = useState(false); // Flag for config screen if keys are missing
+
+  useEffect(() => {
+    if (!db) return;
+    const unsubscribeConfig = onSnapshot(doc(db, "system_config", "ai_keys"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setConfig(prev => ({ aiModel: 'gemini-2.5-flash', ...data }));
+        if (!data.geminiKey && !data.aiModel?.startsWith('ollama/')) {
+          setIsConfiguring(true); // Keys are missing, show config
+        } else {
+          setIsConfiguring(false); // Keys are present
+        }
+      } else {
+        setIsConfiguring(true); // No config document, show config
+      }
+    });
+    return () => unsubscribeConfig();
+  }, []);
+
+  const fetchAiRecommendations = async () => {
+    if (!config.geminiKey && !config.aiModel.startsWith('ollama/')) {
+      setErrorAi('請先在 AI 工程師頁面設定 Gemini API Key 或選擇 Ollama 模型！');
+      // Do not clear recommendations if error is config related, let user fix config
+      return;
+    }
+    if (!searchTerm.trim()) {
+      setAiRecommendations([]); // Clear recommendations if search term is empty
+      setErrorAi('');
+      return;
+    }
+
+    setLoadingAi(true);
+    setErrorAi('');
+    try {
+      const prompt = `請根據關鍵字「${searchTerm}」推薦5個越南峴港的伴手禮。以 JSON 陣列格式回傳，每個物件包含 'name'(名稱), 'description'(描述), 'imageUrl'(真實有效的圖片 URL), 'whereToBuy'(哪裡買) 欄位。imageUrl 必須是來自公開網域且真實有效的圖片 URL，例如來自 Pexels、Unsplash 或 Flickr。`;
+      let response = await callAI(config.aiModel, prompt, config.geminiKey);
+      
+      // Attempt to parse JSON. Sometimes LLMs include extra text.
+      const jsonMatch = response.match(/json\n([\s\S]*?)\n/);
+      if (jsonMatch && jsonMatch[1]) {
+        response = jsonMatch[1];
+      }
+      
+      const parsedRecommendations = JSON.parse(response);
+      if (Array.isArray(parsedRecommendations)) {
+        setAiRecommendations(parsedRecommendations);
+      } else {
+        throw new Error('AI 回傳的格式不正確，請再試一次。');
+      }
+    } catch (err) {
+      console.error("Error fetching AI recommendations:", err);
+      setErrorAi('AI 推薦失敗: ' + err.message);
+      setAiRecommendations([]); // Clear previous recommendations on AI error
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
+  const debouncedFetch = useRef(null);
+  useEffect(() => {
+    if (debouncedFetch.current) {
+      clearTimeout(debouncedFetch.current);
+    }
+    // Only debounce if not initially loading/configuring
+    if (!isConfiguring || (config.geminiKey || config.aiModel.startsWith('ollama/'))) {
+      debouncedFetch.current = setTimeout(() => {
+        fetchAiRecommendations();
+      }, 800); // Debounce by 800ms
+    }
+    return () => clearTimeout(debouncedFetch.current);
+  }, [searchTerm, config.aiModel, config.geminiKey, isConfiguring]); // Re-run if config changes
+
+  // If the user hasn't configured AI keys, show a simple message or direct them to AI settings.
+  if (isConfiguring && (!config.geminiKey && !config.aiModel.startsWith('ollama/'))) {
+    return (
+      <div className="pb-24 bg-[#f5f6f8] min-h-screen p-4">
+        <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
+          <h2 className="text-2xl font-bold">推薦伴手禮</h2>
+        </div>
+        <div className="bg-red-100 text-red-700 p-4 rounded-xl mt-4 text-center">
+          <i className="ph-fill ph-warning text-3xl mb-2"></i>
+          <p className="font-bold">AI 服務未設定！</p>
+          <p className="text-sm">請前往「AI 工程師」頁面設定 Gemini API Key 或選擇 Ollama 模型。</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-24 bg-[#f5f6f8] min-h-screen">
       <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
-        <h2 className="text-2xl font-bold">推薦伴手禮</h2>
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <i className="ph-fill ph-shopping-bag"></i> AI 伴手禮推薦
+        </h2>
+        <p className="text-[10px] text-gray-300 mt-1">即時搜尋越南峴港的伴手禮</p>
       </div>
-      <div className="p-4 space-y-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-orange-500">
-           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">帶皮腰果</h3>
-           <p className="text-sm text-gray-500 mb-2">越南特產，香脆可口，適合長輩。</p>
-           <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：Han Market 或 Lotte Mart</div>
+      <div className="p-4">
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="搜尋伴手禮 (例如：咖啡、腰果、衣服)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+          />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-yellow-600">
-           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">G7 咖啡 / 滴漏咖啡</h3>
-           <p className="text-sm text-gray-500 mb-2">經典越式咖啡，伴手禮首選。</p>
-           <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：各大超市均有販售</div>
+
+        {loadingAi && (
+          <div className="text-center text-orange-500 py-6">
+            <i className="ph ph-spinner-gap animate-spin text-3xl mb-2 block"></i>
+            <p>AI 正在努力生成推薦中...</p>
+          </div>
+        )}
+
+        {errorAi && (
+          <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+            <i className="ph-bold ph-warning"></i>
+            {errorAi}
+          </div>
+        )}
+
+        {!loadingAi && aiRecommendations.length === 0 && searchTerm.trim() && !errorAi && (
+          <div className="text-center text-gray-400 py-10">
+            <i className="ph-fill ph-robot text-6xl text-gray-300 mb-2 block"></i>
+            沒有找到相關伴手禮，請嘗試其他關鍵字。
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {!loadingAi && aiRecommendations.map((item, index) => (
+            <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start gap-4">
+              {item.imageUrl && (
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.name} 
+                  className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" 
+                  onError={(e) => {e.target.onerror = null; e.target.src="https://via.placeholder.com/96x96?text=No+Image"}} // Fallback for broken images
+                />
+              )}
+              <div className="flex-1">
+                <h3 className="font-bold text-lg mb-1 text-[#1E2336]">{item.name}</h3>
+                <p className="text-sm text-gray-600 mb-2 leading-snug">{item.description}</p>
+                {item.whereToBuy && (
+                  <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block mt-1">
+                    哪裡買：{item.whereToBuy}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-green-500">
-           <h3 className="font-bold text-lg mb-2 text-[#1E2336]">綠豆糕 / 椰子糖</h3>
-           <p className="text-sm text-gray-500 mb-2">在地傳統甜點，小朋友最愛。</p>
-        </div>
+
+        {/* Original hardcoded items - displayed only if no search term and no AI recommendations */}
+        {!loadingAi && !searchTerm.trim() && aiRecommendations.length === 0 && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-orange-500 flex items-start gap-4">
+                <img src="https://images.unsplash.com/photo-1595185966956-f844007d3536?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="帶皮腰果" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-2 text-[#1E2336]">帶皮腰果</h3>
+                    <p className="text-sm text-gray-500 mb-2">越南特產，香脆可口，適合長輩。</p>
+                    <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：Han Market 或 Lotte Mart</div>
+                </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-yellow-600 flex items-start gap-4">
+                <img src="https://images.unsplash.com/photo-1520624021703-0c464efc96cb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="G7 咖啡" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-2 text-[#1E2336]">G7 咖啡 / 滴漏咖啡</h3>
+                    <p className="text-sm text-gray-500 mb-2">經典越式咖啡，伴手禮首選。</p>
+                    <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block">哪裡買：各大超市均有販售</div>
+                </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-l-green-500 flex items-start gap-4">
+                <img src="https://images.unsplash.com/photo-1582239328574-e3fb6b8e39f3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="綠豆糕" className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-2 text-[#1E2336]">綠豆糕 / 椰子糖</h3>
+                    <p className="text-sm text-gray-500 mb-2">在地傳統甜點，小朋友最愛。</p>
+                    <div className="bg-blue-50 text-[#4a7c8e] text-xs font-bold px-2 py-1 rounded inline-block mt-1">哪裡買：漢市場或雜貨店</div>
+                </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
 
 function Transport() {
   return (
@@ -587,13 +791,6 @@ function SOS({ onLogout }) {
   );
 }
 
-const AI_MODELS = [
-  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash ⚡' },
-  { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro 🧠' },
-  { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
-  { value: 'ollama/gemma4', label: 'Ollama Gemma4 (本機)' },
-];
-
 function AiAssistant({ user }) {
   const [requests, setRequests] = useState([]);
   const [newReq, setNewReq] = useState("");
@@ -630,32 +827,6 @@ function AiAssistant({ user }) {
     }
   };
 
-  const callAI = async (model, prompt) => {
-    if (model.startsWith('ollama/')) {
-      const ollamaModel = model.replace('ollama/', '');
-      const res = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: ollamaModel, prompt, stream: false })
-      });
-      if (!res.ok) throw new Error('Ollama 呼叫失敗，請確認 Ollama 正在執行 (port 11434)。');
-      const data = await res.json();
-      return data.response;
-    } else {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.geminiKey.trim()}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-      });
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(`Gemini API 失敗: ${errData.error?.message || '未知錯誤'}`);
-      }
-      const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
-    }
-  };
-
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newReq.trim() || !db) return;
@@ -685,8 +856,8 @@ function AiAssistant({ user }) {
 
       setLoadingText(`正在呼叫 ${model} 修改程式碼...`);
       const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
-      let newCode = await callAI(model, prompt);
-      newCode = newCode.replace(/```jsx\n?/g, "").replace(/```\n?/g, "").trim();
+      let newCode = await callAI(model, prompt, config.geminiKey); // Pass geminiKey here
+      newCode = newCode.replace(/\n?/g, "").replace(/\n?/g, "").trim();
 
       setLoadingText("正在推送到 GitHub...");
       const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
