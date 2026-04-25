@@ -54,10 +54,10 @@ const DEFAULT_ITINERARY = [
     day: 4, date: '05/29 (五)', title: '前進會安', summary: '移動至會安並享受古鎮夜景。', icon: 'ph-car',
     activities: [
       { time: '10:00', type: 'activity', title: '包車前往會安', location: '車程約 45 分鐘', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1544465595-5807c4270e5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyJTIwdHJhdmVsfGVufDB8fHx8MTcxODI1OTMyOHww&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '11:00', type: 'hotel', title: '抵達會安渡假村 Check-in', location: '會安', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '11:00', type: 'hotel', title: '抵達會安渡假村 Check-in', location: '會安', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW5wwfHx8fDE3MTgyNTkzODV8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:30', type: 'meal', title: '午餐', location: '會安特色美食', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '14:00', type: 'hotel', title: '飯店午休 / 泳池玩水', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '16:30', type: 'activity', title: '漫步會安古鎮', location: 'Hoi An Ancient Town', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW58MHx8fHwxNzE4MjU5NDEyfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '飯店午休 / 泳池玩水', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW5wwfHx8fDE3MTgyNTkzODV8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '漫步會安古鎮', location: 'Hoi An Ancient Town', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW5wwfHx8fDE3MTgyNTk0MTJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '18:30', type: 'activity', title: '欣賞夜間燈籠與晚餐', location: '秋盆河畔', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1563212674-32e650b81467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuc3xlbnwwfHx8fDE3MTgyNTk0MzB8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
@@ -67,8 +67,8 @@ const DEFAULT_ITINERARY = [
       { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '10:00', type: 'activity', title: '迦南島椰林竹籃船', location: 'Cam Thanh (約 1 小時)', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1627993081822-0d61845bb07f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29jb251tCUyMGJhc2tldCUyMGJvYXR8ZW58MHx8fHwxNzE4MjU5NDY5fDA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:00', type: 'meal', title: '當地午餐', location: '迦南島周邊', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '14:00', type: 'hotel', title: '返回飯店休息', location: '避免午後高溫', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '16:30', type: 'activity', title: '自由活動', location: '可再次逛古鎮或在飯店休息', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW58MHx8fHwxNzE4MjU5NDEyfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '返回飯店休息', location: '避免午後高溫', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW5wwfHx8fDE3MTgyNTkzODV8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '自由活動', location: '可再次逛古鎮或在飯店休息', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW5wwfHx8fDE3MTgyNTk0MTJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '18:30', type: 'meal', title: '晚餐', location: '會安', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1563212674-32e650b81467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuc3xlbnwwfHx8fDE3MTgyNTk0MzB8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
@@ -90,7 +90,7 @@ const DEFAULT_ITINERARY = [
       { time: '10:30', type: 'hotel', title: '玩水 / 兒童俱樂部', location: '飯店內', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG90ZWwlMjBwb29sfGVufDB8fHx8MTcxODI1OTczOXww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:30', type: 'meal', title: '午餐', location: '飯店內或叫外送', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a42322?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVmZmV0JTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkyMzV8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'hotel', title: '午休', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '16:30', type: 'activity', title: '海邊散步看夕陽', location: '私人海灘', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1613545089332-ad185b3b185b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGFuYW5nJTIwYmVhY2glMjBzdW5zZXR8ZW58MHx8fHwxNzE4MjU5Nzc3fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '海邊散步看夕陽', location: '私人海灘', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1613545089332-ad185b3b185b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGFuYW5nJTIwYmVhY2hlJTIwc3Vuc2V0fGVufDB8fHx8MTcxODI1OTc3N3ww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '18:30', type: 'meal', title: '晚餐', location: '', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
@@ -111,12 +111,23 @@ const DEFAULT_ITINERARY = [
     activities: [
       { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '10:00', type: 'activity', title: '整理行李 & Check-out', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1542838132-ff45b3a3250b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmllbmFtZXNlJTIwc2hvcHBpbmclMjBtYXJrZXR8ZW5wwfHx8fDE3MTgyNTk4NzN8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1542838132-ff45b3a3250b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmieamVsZXNlJTIwc2hvcHBpbmclMjBtYXJrZXR8ZW5wwfHx8fDE3MTgyNTk4NzN8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '12:30', type: 'meal', title: '午餐', location: '市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'flight', title: '前往峴港機場', location: 'DAD', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '16:00', type: 'flight', title: '搭機返回台北', location: 'DAD -> TPE', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   }
+];
+
+// --- Data: Preparation Checklist ---
+const DEFAULT_PREPARATION_ITEMS = [
+  { text: "護照 (效期需滿6個月)", checked: false },
+  { text: "越南電子簽證 (e-Visa)", checked: false },
+  { text: "網卡 / eSIM", checked: false },
+  { text: "防曬乳、防蚊液", checked: false },
+  { text: "常備藥品 (腸胃藥、感冒藥)", checked: false },
+  { text: "薄外套 (巴拿山上較冷)", checked: false },
+  { text: "美金 (到當地換越盾)", checked: false }
 ];
 
 // --- AI Models Configuration ---
@@ -241,6 +252,7 @@ function EditableText({ value, onSave, className, isMultiline = false }) {
         onKeyDown={handleKeyDown}
         className={`w-full bg-blue-50/50 border border-blue-200 rounded px-1 outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
         rows={3}
+        onClick={e => e.stopPropagation()} // Prevent parent click handler
       />
     ) : (
       <input
@@ -251,7 +263,7 @@ function EditableText({ value, onSave, className, isMultiline = false }) {
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         className={`w-full bg-blue-50/50 border border-blue-200 rounded px-1 outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
-        onClick={e => e.stopPropagation()}
+        onClick={e => e.stopPropagation()} // Prevent parent click handler
       />
     );
   }
@@ -728,32 +740,167 @@ function Transport() {
 }
 
 function Preparation() {
-  const [items, setItems] = useState([
-    { id: 1, text: "護照 (效期需滿6個月)", checked: false },
-    { id: 2, text: "越南電子簽證 (e-Visa)", checked: false },
-    { id: 3, text: "網卡 / eSIM", checked: false },
-    { id: 4, text: "防曬乳、防蚊液", checked: false },
-    { id: 5, text: "常備藥品 (腸胃藥、感冒藥)", checked: false },
-    { id: 6, text: "薄外套 (巴拿山上較冷)", checked: false },
-    { id: 7, text: "美金 (到當地換越盾)", checked: false }
-  ]);
+  const [items, setItems] = useState([]);
+  const [newItemText, setNewItemText] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const toggleItem = (id) => {
-    setItems(items.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+  useEffect(() => {
+    if (!db) {
+      console.warn("Firebase is not initialized for Preparation component.");
+      setLoading(false);
+      return;
+    }
+
+    const q = query(collection(db, "preparation_checklist"), orderBy("createdAt", "asc"));
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (snapshot.empty) {
+        // If no items, seed with defaults
+        try {
+          for (const item of DEFAULT_PREPARATION_ITEMS) {
+            await addDoc(collection(db, "preparation_checklist"), {
+              ...item,
+              createdAt: serverTimestamp() // Add timestamp for ordering
+            });
+          }
+        } catch (err) {
+          console.error("Error seeding preparation checklist:", err);
+        }
+      } else {
+        // Otherwise, load existing items
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setItems(data);
+        setLoading(false);
+      }
+    }, (error) => {
+      console.error("Error fetching preparation checklist:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const toggleItem = async (id, currentCheckedState) => {
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, "preparation_checklist", id), {
+        checked: !currentCheckedState
+      });
+    } catch (err) {
+      alert("更新失敗：" + err.message);
+    }
   };
+
+  const handleAddItem = async () => {
+    if (!db || !newItemText.trim()) return;
+    try {
+      await addDoc(collection(db, "preparation_checklist"), {
+        text: newItemText.trim(),
+        checked: false,
+        createdAt: serverTimestamp()
+      });
+      setNewItemText("");
+    } catch (err) {
+      alert("新增失敗：" + err.message);
+    }
+  };
+
+  const handleEditItem = async (id, newText) => {
+    if (!db || !newText.trim()) return;
+    try {
+      await updateDoc(doc(db, "preparation_checklist", id), {
+        text: newText.trim()
+      });
+    } catch (err) {
+      alert("編輯失敗：" + err.message);
+    }
+  };
+
+  const handleDeleteItem = async (id) => {
+    if (!db) return;
+    if (window.confirm("確定要刪除此項目嗎？")) {
+      try {
+        await deleteDoc(doc(db, "preparation_checklist", id));
+      } catch (err) {
+        alert("刪除失敗：" + err.message);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="pb-24 bg-[#f5f6f8] min-h-screen">
+        <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
+          <h2 className="text-2xl font-bold">出發準備清單</h2>
+        </div>
+        <div className="p-4 text-center text-gray-500">
+          <i className="ph ph-spinner-gap animate-spin text-2xl"></i>
+          <p>載入中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-24 bg-[#f5f6f8] min-h-screen">
       <div className="bg-[#1E2336] text-white p-6 shadow-sm sticky top-0 z-10">
-        <h2 className="text-2xl font-bold">出發準備清單</h2>
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+            <i className="ph-fill ph-check-square"></i> 出發準備清單
+        </h2>
       </div>
       <div className="p-4 space-y-3">
+        {/* Add New Item Input */}
+        <div className="bg-white rounded-xl p-3 shadow-sm flex gap-2 items-center">
+          <input
+            type="text"
+            placeholder="新增準備事項..."
+            value={newItemText}
+            onChange={(e) => setNewItemText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c8e]"
+          />
+          <button
+            onClick={handleAddItem}
+            className="bg-[#4a7c8e] text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-[#3b6675] transition-colors shrink-0"
+            title="新增項目"
+          >
+            <i className="ph-bold ph-plus text-xl"></i>
+          </button>
+        </div>
+
+        {items.length === 0 && (
+          <div className="text-center text-gray-400 py-10">
+            <i className="ph-fill ph-note-pencil text-6xl text-gray-300 mb-2 block"></i>
+            目前沒有準備事項，點擊上方新增一個吧！
+          </div>
+        )}
+
+        {/* List of Items */}
         {items.map(item => (
-          <div key={item.id} onClick={() => toggleItem(item.id)} className="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3 cursor-pointer transition-colors active:bg-gray-50">
-            <div className={`w-6 h-6 rounded-md flex items-center justify-center border ${item.checked ? 'bg-[#4a7c8e] border-[#4a7c8e]' : 'border-gray-300'}`}>
+          <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3 group">
+            {/* Checkbox */}
+            <div 
+              onClick={(e) => { e.stopPropagation(); toggleItem(item.id, item.checked); }}
+              className={`w-6 h-6 rounded-md flex items-center justify-center border ${item.checked ? 'bg-[#4a7c8e] border-[#4a7c8e]' : 'border-gray-300'} cursor-pointer shrink-0`}
+              title={item.checked ? "取消勾選" : "勾選"}
+            >
               {item.checked && <i className="ph-bold ph-check text-white text-sm"></i>}
             </div>
-            <span className={`font-bold ${item.checked ? 'text-gray-400 line-through' : 'text-[#1E2336]'}`}>{item.text}</span>
+            
+            {/* Editable Text */}
+            <EditableText 
+              value={item.text} 
+              onSave={(newText) => handleEditItem(item.id, newText)} 
+              className={`flex-1 font-bold text-sm ${item.checked ? 'text-gray-400 line-through' : 'text-[#1E2336]'}`}
+            />
+
+            {/* Delete Button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
+              className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 shrink-0"
+              title="刪除項目"
+            >
+              <i className="ph-bold ph-trash text-lg"></i>
+            </button>
           </div>
         ))}
       </div>
@@ -883,7 +1030,7 @@ function AiAssistant({ user }) {
       const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
       let newCode = await callAI(model, prompt, config.geminiKey); // Pass geminiKey here
       // Robustly remove markdown code blocks
-      newCode = newCode.replace(/\n?/g, "").replace(/\n?/g, "").replace(/\n?/g, "").trim();
+      newCode = newCode.replace(/\n?\n?/g, "").replace(/\n?\n?/g, "").trim();
 
       setLoadingText("正在推送到 GitHub...");
       const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
