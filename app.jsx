@@ -25,7 +25,7 @@ const DEFAULT_ITINERARY = [
       { time: '10:00', type: 'flight', title: '搭機前往峴港', location: 'TPE -> DAD (具體航班待定)', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '14:00', type: 'hotel', title: '抵達飯店 Check-in', location: '峴港市區 (親子友善飯店)', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
       { time: '16:00', type: 'activity', title: '美溪沙灘玩沙', location: 'My Khe Beach', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1627883515828-e4b3706c9a9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fG15JTIwa2hlJTIwYmVhY2h8ZW58MHx8fHwxNzE4MjU4OTc4fDA&ixlib=rb-4.0.3&q=80&w=400' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d1fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
@@ -128,23 +128,75 @@ const AI_MODELS = [
   { value: 'ollama/gemma4', label: 'Ollama Gemma4 (本機)' },
 ];
 
+// --- Helper: Convert File to Base64 ---
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1]; // Extract only the base64 string part
+      resolve(base64String);
+    };
+    reader.onerror = error => reject(error);
+  });
+}
+
 // --- Global AI Call Helper Function ---
-async function callAI(model, prompt, geminiKey) {
+async function callAI(model, prompt, geminiKey, fileParts = []) {
     if (model.startsWith('ollama/')) {
+      // Ollama's 'generate' endpoint does not natively support multimodal inputs with 'inlineData' structure
+      // For Ollama, we'll append text file content to the prompt. Image files cannot be sent directly.
+      let finalPrompt = prompt;
+      if (fileParts.length > 0) {
+          const textContents = await Promise.all(
+              fileParts
+                  .filter(p => p.mimeType.startsWith('text/'))
+                  .map(async p => {
+                      try {
+                          return atob(p.data); // Decode base64 to text
+                      } catch (e) {
+                          console.error("Error decoding base64 text for Ollama:", e);
+                          return "";
+                      }
+                  })
+          );
+          if (textContents.some(t => t.trim() !== "")) {
+              finalPrompt += "\n\n--- 附加檔案內容 ---\n";
+              textContents.forEach((content, index) => {
+                  finalPrompt += `檔案 ${index + 1} 內容:\n${content}\n`;
+              });
+              finalPrompt += "--- 檔案內容結束 ---\n\n";
+          }
+          const imageFilesPresent = fileParts.some(p => p.mimeType.startsWith('image/'));
+          if (imageFilesPresent) {
+              finalPrompt += "\n(注意: 您已上傳圖片，但Ollama本機模型目前無法直接處理圖片，請在提示中詳細描述圖片內容。)\n";
+          }
+      }
+
       const ollamaModel = model.replace('ollama/', '');
       const res = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: ollamaModel, prompt, stream: false })
+        body: JSON.stringify({ model: ollamaModel, prompt: finalPrompt, stream: false })
       });
       if (!res.ok) throw new Error('Ollama 呼叫失敗，請確認 Ollama 正在執行 (port 11434)。');
       const data = await res.json();
       return data.response;
-    } else {
+    } else { // Gemini models
+      const contentParts = [{ text: prompt }];
+      if (fileParts.length > 0) {
+          contentParts.push(...fileParts.map(fp => ({
+              inlineData: {
+                  mimeType: fp.mimeType,
+                  data: fp.data // Base64 encoded string
+              }
+          })));
+      }
+
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({ contents: [{ parts: contentParts }] })
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -804,6 +856,8 @@ function SOS({ onLogout }) {
 function AiAssistant({ user }) {
   const [requests, setRequests] = useState([]);
   const [newReq, setNewReq] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null); // New state for file upload
+  const fileInputRef = useRef(null); // New ref for file input
   const [config, setConfig] = useState({ geminiKey: '', githubToken: '', aiModel: 'gemini-2.5-flash' });
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -852,21 +906,68 @@ function AiAssistant({ user }) {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const MAX_FILE_SIZE_MB = 10;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setLoadingText(`檔案大小不能超過 ${MAX_FILE_SIZE_MB}MB`);
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain'];
+      if (!allowedTypes.includes(file.type)) {
+        setLoadingText('不支援此檔案類型。請上傳圖片、PDF 或文字檔。');
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      setSelectedFile(file);
+      setLoadingText("");
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newReq.trim() || !db) return;
+    if (!newReq.trim() && !selectedFile) return; // Must have text or file
+    if (!db) return;
     const model = config.aiModel || 'gemini-2.5-flash';
     const isOllama = model.startsWith('ollama/');
-    if (!isOllama && !config.geminiKey) { setIsConfiguring(true); return alert('請先設定 Gemini API Key！'); }
-    if (!config.githubToken) { setIsConfiguring(true); return alert('請先設定 GitHub Token！'); }
+    if (!isOllama && !config.geminiKey) { setIsConfiguring(true); setLoadingText(""); return alert('請先設定 Gemini API Key！'); }
+    if (!config.githubToken) { setIsConfiguring(true); setLoadingText(""); return alert('請先設定 GitHub Token！'); }
 
     const requestText = newReq;
     setNewReq("");
+    
+    let fileParts = [];
+    if (selectedFile) {
+        try {
+            const base64Data = await fileToBase64(selectedFile);
+            fileParts.push({
+                mimeType: selectedFile.type,
+                data: base64Data
+            });
+            handleRemoveFile(); // Clear file input after it's processed for sending
+        } catch (err) {
+            setLoadingText("檔案讀取失敗: " + err.message);
+            return;
+        }
+    }
+
     let reqRef;
     try {
       reqRef = await addDoc(collection(db, "ai_requests"), {
         text: requestText, author: user.displayName || user.email,
-        model: model, createdAt: serverTimestamp(), status: 'processing'
+        model: model, createdAt: serverTimestamp(), status: 'processing',
+        file: selectedFile ? { name: selectedFile.name, type: selectedFile.type } : null // Store file metadata
       });
     } catch(e) { console.error(e); }
 
@@ -881,386 +982,8 @@ function AiAssistant({ user }) {
 
       setLoadingText(`正在呼叫 ${model} 修改程式碼...`);
       const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not include any text before or after the code block. Maintain the existing file structure and DO NOT remove newlines.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
-      let aiResponse = await callAI(model, prompt, config.geminiKey); 
+      let aiResponse = await callAI(model, prompt, config.geminiKey, fileParts); 
 
       // CRITICAL: Extract only the code block to avoid saving conversational text.
       let newCode = aiResponse;
-      const codeBlockRegex = /```(?:jsx|javascript)?\n?([\s\S]*?)\n?```/i;
-      const match = aiResponse.match(codeBlockRegex);
-      if (match && match[1]) {
-        newCode = match[1].trim();
-      } else {
-        // Fallback: strip markers if they exist but don't match the regex perfectly
-        newCode = aiResponse.replace(/```jsx\n?/g, "")
-                            .replace(/```javascript\n?/g, "")
-                            .replace(/```\n?/g, "")
-                            .trim();
-      }
-
-      setLoadingText("正在推送到 GitHub...");
-      const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
-      const updateRes = await fetch(repoUrl, {
-        method: "PUT",
-        headers: { "Authorization": `token ${config.githubToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: `AI Auto Update (${model}): ${requestText}`, content: encodedCode, sha })
-      });
-      if (!updateRes.ok) throw new Error("推送到 GitHub 失敗");
-      if (reqRef) await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'completed' });
-      setLoadingText("");
-      alert("修改成功！PWA 將在 1-2 分鐘後更新，請強制重新整理頁面。");
-    } catch (err) {
-      setLoadingText("");
-      if (reqRef) await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'error', error: err.message });
-      alert("發生錯誤: " + err.message);
-    }
-  };
-
-  if (isConfiguring) {
-    return (
-      <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8] p-4">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-10">
-           <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-purple-600"><i className="ph-fill ph-key"></i> 系統金鑰設定</h2>
-           <p className="text-xs text-gray-500 mb-6 leading-relaxed">這是讓 PWA 能夠「自我修改」的核心。金鑰會安全儲存在 Firebase 中，不會被推送到公開的 GitHub。</p>
-           <form onSubmit={saveConfig} className="space-y-4">
-             <div>
-               <label className="text-xs font-bold text-gray-700 block mb-1">AI 模型選擇</label>
-               <select value={config.aiModel || 'gemini-2.5-flash'} onChange={e => setConfig({...config, aiModel: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                 {AI_MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-               </select>
-             </div>
-             <div>
-               <label className="text-xs font-bold text-gray-700 block mb-1">Gemini API Key</label>
-               <input type="password" value={config.geminiKey || ''} onChange={e => setConfig({...config, geminiKey: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="AIzaSy..." />
-               <p className="text-[10px] text-gray-400 mt-1">使用 Ollama 本機模型時可留空</p>
-             </div>
-             <div>
-               <label className="text-xs font-bold text-gray-700 block mb-1">GitHub Fine-Grained Token</label>
-               <input type="password" value={config.githubToken || ''} onChange={e => setConfig({...config, githubToken: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="github_pat_..." required />
-             </div>
-             <div className="pt-4 flex gap-2">
-                {config.githubToken && <button type="button" onClick={() => setIsConfiguring(false)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">取消</button>}
-                <button type="submit" className="flex-1 bg-purple-600 text-white py-3 rounded-xl font-bold">儲存設定</button>
-             </div>
-           </form>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8]">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 shadow-sm shrink-0">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <i className="ph-fill ph-magic-wand"></i> AI 工程師
-            </h2>
-            <p className="text-[10px] text-purple-100 mt-1 leading-tight">
-              輸入願望，自動呼叫 AI 改寫程式碼並推送到 Git。
-            </p>
-          </div>
-          <button onClick={() => setIsConfiguring(true)} className="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-colors shrink-0 ml-2">
-            <i className="ph-fill ph-gear text-xl"></i>
-          </button>
-        </div>
-        <select
-          value={config.aiModel || 'gemini-2.5-flash'}
-          onChange={e => setConfig({...config, aiModel: e.target.value})}
-          className="w-full bg-white/20 border border-white/30 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
-        >
-          {AI_MODELS.map(m => <option key={m.value} value={m.value} className="text-gray-800 bg-white">{m.label}</option>)}
-        </select>
-      </div>
-      
-      {loadingText && (
-        <div className="bg-yellow-50 p-3 border-b border-yellow-100 flex items-center justify-center gap-2 text-yellow-700 text-sm font-bold">
-           <i className="ph ph-spinner-gap animate-spin text-xl"></i> {loadingText}
-        </div>
-      )}
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
-        {requests.length === 0 ? (
-          <div className="text-center text-gray-400 mt-10">
-            <i className="ph-fill ph-robot text-6xl text-gray-300 mb-2 block"></i>
-            想要改什麼呢？<br/>例如：「把所有的藍色換成綠色」
-          </div>
-        ) : (
-          requests.map(req => (
-            <div key={req.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">{req.author}</span>
-                  {req.model && <span className="text-[10px] text-gray-400 pl-1">{req.model}</span>}
-                </div>
-                <div className="flex items-center gap-2">
-                  {req.status === 'completed' ? (
-                    <span className="text-xs text-green-500 font-bold flex items-center gap-1"><i className="ph-bold ph-check"></i> 已完成</span>
-                  ) : req.status === 'error' ? (
-                    <span className="text-xs text-red-500 font-bold flex items-center gap-1"><i className="ph-bold ph-warning"></i> 失敗</span>
-                  ) : req.status === 'cancelled' ? (
-                    <span className="text-xs text-gray-500 font-bold flex items-center gap-1"><i className="ph-bold ph-prohibit"></i> 已取消</span>
-                  ) : (
-                    <span className="text-xs text-orange-500 font-bold flex items-center gap-1"><i className="ph-bold ph-clock"></i> 處理中</span>
-                  )}
-                  {req.status === 'processing' && (
-                    <button
-                      onClick={() => handleCancelPrompt(req.id)}
-                      className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors flex items-center gap-1"
-                      title="取消此指令"
-                    >
-                      <i className="ph-bold ph-x-circle"></i> 取消
-                    </button>
-                  )}
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm whitespace-pre-wrap">{req.text}</p>
-              {req.status === 'error' && req.error && <p className="text-red-400 text-xs mt-2 bg-red-50 px-2 py-1 rounded">{req.error}</p>}
-              {req.status === 'cancelled' && req.error && <p className="text-gray-400 text-xs mt-2 bg-gray-50 px-2 py-1 rounded">{req.error}</p>}
-            </div>
-          ))
-        )}
-      </div>
-
-      <div className="p-4 bg-white border-t border-gray-100 shrink-0 mb-16">
-        <form onSubmit={handleSend} className="flex gap-2">
-          <input
-            type="text"
-            value={newReq}
-            onChange={(e) => setNewReq(e.target.value)}
-            disabled={!!loadingText}
-            placeholder="例如：把頂部導覽列改成紅色"
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-          />
-          <button type="submit" disabled={!!loadingText} className="bg-purple-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-purple-700 transition-colors disabled:opacity-50">
-            <i className="ph-bold ph-paper-plane-right"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function GeminiChat({ user }) {
-  const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState('');
-  const [config, setConfig] = useState({ geminiKey: '' });
-  const [isConfiguring, setIsConfiguring] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const GEMINI_CHAT_MODEL = 'gemini-2.5-flash';
-  const SYSTEM_PROMPT = `你是一個專業的旅行規劃 AI 助手。你可以回答關於越南旅行的問題，並根據目前的應用程式功能提供協助。語氣友善且使用繁體中文。`;
-
-  useEffect(() => {
-    if (!db) return;
-    const unsubscribeConfig = onSnapshot(doc(db, "system_config", "ai_keys"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setConfig({ geminiKey: data.geminiKey || '' });
-        setIsConfiguring(!data.geminiKey);
-      } else {
-        setIsConfiguring(true);
-      }
-    });
-
-    const q = query(collection(db, "gemini_chat"), orderBy("createdAt", "asc"));
-    const unsubscribeChat = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return () => { unsubscribeConfig(); unsubscribeChat(); };
-  }, []);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || isGenerating || !db) return;
-    if (!config.geminiKey) return setIsConfiguring(true);
-
-    const userMessage = inputMessage.trim();
-    setInputMessage("");
-    setIsGenerating(true);
-
-    try {
-      const userMsgRef = await addDoc(collection(db, "gemini_chat"), {
-        sender: 'user', text: userMessage, createdAt: serverTimestamp(), author: user.displayName || user.email
-      });
-
-      const conversationHistory = messages.slice(-5).map(msg => `${msg.sender === 'user' ? '使用者' : 'AI'}: ${msg.text}`).join('\n');
-      const fullPrompt = `${SYSTEM_PROMPT}\n\n對話歷史：\n${conversationHistory}\n使用者：${userMessage}`;
-      
-      const aiResponse = await callAI(GEMINI_CHAT_MODEL, fullPrompt, config.geminiKey);
-      await addDoc(collection(db, "gemini_chat"), {
-        sender: 'gemini', text: aiResponse, createdAt: serverTimestamp(), author: 'Gemini'
-      });
-    } catch (err) {
-      setError("AI 回覆失敗: " + err.message);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  if (isConfiguring) {
-    return (
-      <div className="pb-24 flex items-center justify-center h-screen bg-[#f5f6f8] p-4 text-center">
-        <div className="bg-white p-6 rounded-2xl shadow-sm">
-          <i className="ph-fill ph-warning-circle text-4xl text-blue-500 mb-2"></i>
-          <p className="font-bold">請先在「AI 工程師」設定 Gemini API Key</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8]">
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 shadow-sm shrink-0">
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <i className="ph-fill ph-sparkle"></i> Gemini 聊天室
-        </h2>
-      </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm shadow-sm ${
-              msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none'
-            }`}>
-              {msg.text}
-            </div>
-          </div>
-        ))}
-        {isGenerating && <div className="text-xs text-gray-400 animate-pulse">Gemini 正在思考...</div>}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="p-4 bg-white border-t border-gray-100 mb-16">
-        <form onSubmit={handleSendMessage} className="flex gap-2">
-          <input
-            type="text" value={inputMessage} onChange={e => setInputMessage(e.target.value)}
-            placeholder="輸入訊息..." className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button type="submit" className="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center">
-            <i className="ph-bold ph-paper-plane-right"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('itinerary');
-
-  useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      if (u && WHITELIST.includes(u.email)) {
-        setUser(u);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <div className="h-screen flex items-center justify-center"><div className="animate-spin text-blue-500"><i className="ph ph-spinner-gap text-4xl"></i></div></div>;
-  }
-
-  if (!user) {
-    return <LoginScreen />;
-  }
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'itinerary': return <Itinerary />;
-      case 'souvenirs': return <Souvenirs />;
-      case 'transport': return <Transport />;
-      case 'preparation': return <Preparation />;
-      case 'ai': return <AiAssistant user={user} />;
-      case 'gemini': return <GeminiChat user={user} />;
-      case 'sos': return <SOS onLogout={() => signOut(auth)} />;
-      default: return <Itinerary />;
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto relative bg-[#f5f6f8] min-h-screen shadow-xl overflow-hidden">
-      
-      {/* Main Content Area */}
-      <div className="h-full overflow-y-auto hide-scrollbar">
-        {renderContent()}
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#1E2336] px-1 py-2 flex justify-between items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pb-safe overflow-x-auto hide-scrollbar">
-        <button 
-          onClick={() => setActiveTab('itinerary')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'itinerary' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'itinerary' ? 'ph-fill ph-calendar-check' : 'ph ph-calendar-check'}`}></i>
-          <span className="text-[9px] font-bold">行程</span>
-        </button>
-        
-        <button 
-          onClick={() => setActiveTab('souvenirs')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'souvenirs' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'souvenirs' ? 'ph-fill ph-shopping-bag' : 'ph ph-shopping-bag'}`}></i>
-          <span className="text-[9px] font-bold">伴手禮</span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('transport')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'transport' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'transport' ? 'ph-fill ph-train' : 'ph ph-train'}`}></i>
-          <span className="text-[9px] font-bold">交通</span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('preparation')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'preparation' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'preparation' ? 'ph-fill ph-check-square' : 'ph ph-check-square'}`}></i>
-          <span className="text-[9px] font-bold">準備</span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('ai')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'ai' ? 'text-purple-400' : 'text-gray-400 hover:text-purple-400'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'ai' ? 'ph-fill ph-magic-wand' : 'ph ph-magic-wand'}`}></i>
-          <span className="text-[9px] font-bold">AI助理</span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('gemini')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 transition-colors py-1 ${activeTab === 'gemini' ? 'text-blue-400' : 'text-gray-400 hover:text-blue-400'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'gemini' ? 'ph-fill ph-sparkle' : 'ph ph-sparkle'}`}></i>
-          <span className="text-[9px] font-bold">Gemini</span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('sos')}
-          className={`flex-none w-[60px] flex flex-col items-center gap-1 py-1 transition-colors ${activeTab === 'sos' ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`}
-        >
-          <i className={`text-2xl ${activeTab === 'sos' ? 'ph-fill ph-first-aid' : 'ph ph-first-aid'}`}></i>
-          <span className="text-[9px] font-bold">SOS</span>
-        </button>
-      </div>
-
-    </div>
-  );
-}
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+      const codeBlockRegex = /
