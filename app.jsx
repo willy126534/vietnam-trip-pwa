@@ -21,99 +21,99 @@ const DEFAULT_ITINERARY = [
   { 
     day: 1, date: '05/26 (二)', title: '啟程與放鬆', summary: '抵達峴港，入住飯店並在海灘放鬆。', icon: 'ph-airplane-landing',
     activities: [
-      { time: '10:00', type: 'flight', title: '搭機前往峴港', location: 'TPE -> DAD (具體航班待定)', color: 'blue' },
-      { time: '14:00', type: 'hotel', title: '抵達飯店 Check-in', location: '峴港市區 (親子友善飯店)', color: 'indigo' },
-      { time: '16:00', type: 'activity', title: '美溪沙灘玩沙', location: 'My Khe Beach', color: 'green' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange' }
+      { time: '10:00', type: 'flight', title: '搭機前往峴港', location: 'TPE -> DAD (具體航班待定)', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '抵達飯店 Check-in', location: '峴港市區 (親子友善飯店)', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'activity', title: '美溪沙灘玩沙', location: 'My Khe Beach', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1627883515828-e4b3706c9a9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fG15JTIwa2hlJTIwYmVhY2h8ZW58MHx8fHwxNzE4MjU4OTc4fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店附近海鮮餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 2, date: '05/27 (三)', title: '市區輕鬆遊', summary: '市區觀光與品嚐當地美食。', icon: 'ph-buildings',
     activities: [
-      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
-      { time: '10:30', type: 'activity', title: '粉紅教堂拍照', location: 'Da Nang Cathedral', color: 'pink' },
-      { time: '12:00', type: 'meal', title: '午餐：越式河粉', location: 'Pho 29 或周邊', color: 'orange' },
-      { time: '14:00', type: 'activity', title: '漢市場周邊散步', location: 'Han Market', color: 'green' },
-      { time: '16:00', type: 'hotel', title: '回飯店午休', location: '避免小孩太累', color: 'indigo' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '市區餐廳', color: 'orange' }
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '10:30', type: 'activity', title: '粉紅教堂拍照', location: 'Da Nang Cathedral', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1629851722818-4a94689b9d3b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8RGFuYW5nJTIwQ2F0aGVkcmFsfGVufDB8fHx8MTcxODI1OTExMHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:00', type: 'meal', title: '午餐：越式河粉', location: 'Pho 29 或周邊', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1620792374304-41d3b0e3564c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NXx8cGhvJTIwdmlldG5hbWVzZXxlbnwwfHx8fDE3MTgyNTkxMzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'activity', title: '漢市場周邊散步', location: 'Han Market', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1616790937748-0051e59c0700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fEhhbiUyME1hcmtldHxlbnwwfHx8fDE3MTgyNTkxNTZ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'hotel', title: '回飯店午休', location: '避免小孩太累', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '市區餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 3, date: '05/28 (四)', title: '巴拿山一日遊', summary: '搭乘世界最長纜車與遊樂園放電。', icon: 'ph-mountains',
     activities: [
-      { time: '08:30', type: 'activity', title: '包車前往巴拿山', location: 'Ba Na Hills', color: 'green' },
-      { time: '09:30', type: 'activity', title: '搭乘纜車 & 黃金佛手橋', location: 'Golden Bridge', color: 'yellow' },
-      { time: '12:00', type: 'meal', title: '午餐：山上自助餐', location: 'Arapang 或其他餐廳', color: 'orange' },
-      { time: '13:30', type: 'activity', title: 'Fantasy Park 室內遊樂園', location: '適合小孩的遊樂設施', color: 'pink' },
-      { time: '16:00', type: 'activity', title: '搭纜車下山', location: '', color: 'green' },
-      { time: '18:00', type: 'meal', title: '晚餐', location: '返回市區', color: 'orange' }
+      { time: '08:30', type: 'activity', title: '包車前往巴拿山', location: 'Ba Na Hills', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1596706019323-c90a169b1610?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8QmElMjBOYSUyMEhpbGxzfGVufDB8fHx8MTcxODI1OTE5MHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '09:30', type: 'activity', title: '搭乘纜車 & 黃金佛手橋', location: 'Golden Bridge', color: 'yellow', imageUrl: 'https://images.unsplash.com/photo-1561705608-d21f83c16260?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8R29sZGVuJTIwQnJpZGdlfGVufDB8fHx8MTcxODI1OTIxMnww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:00', type: 'meal', title: '午餐：山上自助餐', location: 'Arapang 或其他餐廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a42322?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVmZmV0JTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkyMzV8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '13:30', type: 'activity', title: 'Fantasy Park 室內遊樂園', location: '適合小孩的遊樂設施', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1524368535817-af9576a6e110?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YW11c2VtZW50JTIwcGFya3xlbnwwfHx8fDE3MTgyNTkyNjF8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'activity', title: '搭纜車下山', location: '', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1596706019323-c90a169b1610?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8QmElMjBOYSUyMEhpbGxzfGVufDB8fHx8MTcxODI1OTE5MHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:00', type: 'meal', title: '晚餐', location: '返回市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 4, date: '05/29 (五)', title: '前進會安', summary: '移動至會安並享受古鎮夜景。', icon: 'ph-car',
     activities: [
-      { time: '10:00', type: 'activity', title: '包車前往會安', location: '車程約 45 分鐘', color: 'green' },
-      { time: '11:00', type: 'hotel', title: '抵達會安渡假村 Check-in', location: '會安', color: 'indigo' },
-      { time: '12:30', type: 'meal', title: '午餐', location: '會安特色美食', color: 'orange' },
-      { time: '14:00', type: 'hotel', title: '飯店午休 / 泳池玩水', location: '飯店內', color: 'indigo' },
-      { time: '16:30', type: 'activity', title: '漫步會安古鎮', location: 'Hoi An Ancient Town', color: 'green' },
-      { time: '18:30', type: 'activity', title: '欣賞夜間燈籠與晚餐', location: '秋盆河畔', color: 'pink' }
+      { time: '10:00', type: 'activity', title: '包車前往會安', location: '車程約 45 分鐘', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1544465595-5807c4270e5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyJTIwdHJhdmVsfGVufDB8fHx8MTcxODI1OTMyOHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '11:00', type: 'hotel', title: '抵達會安渡假村 Check-in', location: '會安', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '會安特色美食', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '飯店午休 / 泳池玩水', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '漫步會安古鎮', location: 'Hoi An Ancient Town', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW58MHx8fHwxNzE4MjU5NDEyfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'activity', title: '欣賞夜間燈籠與晚餐', location: '秋盆河畔', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1563212674-32e650b81467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuc3xlbnwwfHx8fDE3MTgyNTk0MzB8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 5, date: '05/30 (六)', title: '椰林竹籃船', summary: '有趣的生態體驗，非常適合小孩。', icon: 'ph-boat',
     activities: [
-      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
-      { time: '10:00', type: 'activity', title: '迦南島椰林竹籃船', location: 'Cam Thanh (約 1 小時)', color: 'blue' },
-      { time: '12:00', type: 'meal', title: '當地午餐', location: '迦南島周邊', color: 'orange' },
-      { time: '14:00', type: 'hotel', title: '返回飯店休息', location: '避免午後高溫', color: 'indigo' },
-      { time: '16:30', type: 'activity', title: '自由活動', location: '可再次逛古鎮或在飯店休息', color: 'green' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '會安', color: 'orange' }
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '10:00', type: 'activity', title: '迦南島椰林竹籃船', location: 'Cam Thanh (約 1 小時)', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1627993081822-0d61845bb07f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29jb251tCUyMGJhc2tldCUyMGJvYXR8ZW58MHx8fHwxNzE4MjU5NDY5fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:00', type: 'meal', title: '當地午餐', location: '迦南島周邊', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '返回飯店休息', location: '避免午後高溫', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG9pJTIwYW4lMjByZXNvcnR8ZW58MHx8fHwxNzE4MjU5Mzg1fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '自由活動', location: '可再次逛古鎮或在飯店休息', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1559795090-3b6d0d2b6b1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTR8fGhvaSUyMGFuJTIwYW5jaWVudCUyMHRvd258ZW58MHx8fHwxNzE4MjU5NDEyfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '會安', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1563212674-32e650b81467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuc3xlbnwwfHx8fDE3MTgyNTk0MzB8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 6, date: '05/31 (日)', title: '文化體驗', summary: '體驗當地文化並返回峴港海景飯店。', icon: 'ph-lantern',
     activities: [
-      { time: '09:30', type: 'activity', title: '傳統燈籠製作體驗 (簡單版)', location: '會安古鎮內', color: 'pink' },
-      { time: '12:00', type: 'meal', title: '午餐', location: '古鎮咖啡廳', color: 'orange' },
-      { time: '14:00', type: 'activity', title: '包車返回峴港', location: '', color: 'green' },
-      { time: '15:00', type: 'hotel', title: '入住海景渡假村', location: '峴港海灘區', color: 'indigo' },
-      { time: '16:00', type: 'hotel', title: '享受飯店設施', location: '親子遊戲室或泳池', color: 'blue' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店內或周邊', color: 'orange' }
+      { time: '09:30', type: 'activity', title: '傳統燈籠製作體驗 (簡單版)', location: '會安古鎮內', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1567117565972-2435e76d3338?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aG9pJTIwYW4lMjBsYW50ZXJuJTIwbWFraW5nfGVufDB8fHx8MTcxODI1OTUxMHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:00', type: 'meal', title: '午餐', location: '古鎮咖啡廳', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1561081546-24e0b027c442?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8aG9pJTIwYW4lMjBjYWZlcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTk2MTZ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'activity', title: '包車返回峴港', location: '', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1544465595-5807c4270e5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyJTIwdHJhdmVsfGVufDB8fHx8MTcxODI1OTMyOHww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '15:00', type: 'hotel', title: '入住海景渡假村', location: '峴港海灘區', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'hotel', title: '享受飯店設施', location: '親子遊戲室或泳池', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '飯店內或周邊', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 7, date: '06/01 (一)', title: '渡假村放鬆', summary: '全日享受高級飯店設施與海灘。', icon: 'ph-swimming-pool',
     activities: [
-      { time: '09:00', type: 'meal', title: '飯店豐盛早餐', location: '飯店內', color: 'orange' },
-      { time: '10:30', type: 'hotel', title: '玩水 / 兒童俱樂部', location: '飯店內', color: 'blue' },
-      { time: '12:30', type: 'meal', title: '午餐', location: '飯店內或叫外送', color: 'orange' },
-      { time: '14:00', type: 'hotel', title: '午休', location: '飯店內', color: 'indigo' },
-      { time: '16:30', type: 'activity', title: '海邊散步看夕陽', location: '私人海灘', color: 'green' },
-      { time: '18:30', type: 'meal', title: '晚餐', location: '', color: 'orange' }
+      { time: '09:00', type: 'meal', title: '飯店豐盛早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '10:30', type: 'hotel', title: '玩水 / 兒童俱樂部', location: '飯店內', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1564501049429-c07a04467c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8aG90ZWwlMjBwb29sfGVufDB8fHx8MTcxODI1OTczOXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '飯店內或叫外送', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a42322?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVmZmV0JTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkyMzV8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '午休', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:30', type: 'activity', title: '海邊散步看夕陽', location: '私人海灘', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1613545089332-ad185b3b185b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGFuYW5nJTIwYmVhY2glMjBzdW5zZXR8ZW58MHx8fHwxNzE4MjU5Nzc3fDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '18:30', type: 'meal', title: '晚餐', location: '', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 8, date: '06/02 (二)', title: '亞洲公園', summary: '傍晚前往亞洲公園搭乘摩天輪。', icon: 'ph-ferris-wheel',
     activities: [
-      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
-      { time: '10:30', type: 'hotel', title: '飯店設施放鬆', location: '', color: 'blue' },
-      { time: '12:30', type: 'meal', title: '午餐', location: '', color: 'orange' },
-      { time: '14:00', type: 'hotel', title: '午休', location: '', color: 'indigo' },
-      { time: '16:00', type: 'activity', title: '前往亞洲公園', location: 'Asia Park', color: 'pink' },
-      { time: '17:30', type: 'activity', title: '搭乘太陽摩天輪', location: 'Sun Wheel', color: 'yellow' },
-      { time: '19:00', type: 'meal', title: '晚餐', location: '園區或市區', color: 'orange' }
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '10:30', type: 'hotel', title: '飯店設施放鬆', location: '', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c2VhJTIwdmlldyUyMHJlc29ydHxlbnwwfHx8fDE3MTgyNTk2NzB8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a42322?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVmZmV0JTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkyMzV8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'hotel', title: '午休', location: '', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'activity', title: '前往亞洲公園', location: 'Asia Park', color: 'pink', imageUrl: 'https://images.unsplash.com/photo-1503970003010-8b63e80357d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8QXNpYSUyMFBhcmt8ZW58MHx8fHwxNzE4MjU5ODIxfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '17:30', type: 'activity', title: '搭乘太陽摩天輪', location: 'Sun Wheel', color: 'yellow', imageUrl: 'https://images.unsplash.com/photo-1522075591965-ee449646b528?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8U3VuJTIwV2hlZWwlMjBEYW5hbmd8ZW58MHx8fHwxNzE4MjU5ODQxfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '19:00', type: 'meal', title: '晚餐', location: '園區或市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1546069901-dcd136d8fce2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fHZpZXRuYW1lc2UlMjBzZWFmb29kJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3MTgyNTkwNjh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   },
   { 
     day: 9, date: '06/03 (三)', title: '滿載而歸', summary: '採買伴手禮並搭機返回台北。', icon: 'ph-airplane-takeoff',
     activities: [
-      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange' },
-      { time: '10:00', type: 'activity', title: '整理行李 & Check-out', location: '飯店內', color: 'indigo' },
-      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green' },
-      { time: '12:30', type: 'meal', title: '午餐', location: '市區', color: 'orange' },
-      { time: '14:00', type: 'flight', title: '前往峴港機場', location: 'DAD', color: 'blue' },
-      { time: '16:00', type: 'flight', title: '搭機返回台北', location: 'DAD -> TPE', color: 'blue' }
+      { time: '09:00', type: 'meal', title: '飯店早餐', location: '飯店內', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1505576189958-8549646487e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTJ8fGhvdGVsJTIwYnJlYWtmYXN0fGVufDB8fHx8MTcxODI1OTA4OXww&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '10:00', type: 'activity', title: '整理行李 & Check-out', location: '飯店內', color: 'indigo', imageUrl: 'https://images.unsplash.com/photo-1618773959807-bb2b86062ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvdGVsJTIwY2hlY2tpbnxlbnwwfHx8fDE3MTgyNTg5NjJ8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '11:00', type: 'activity', title: '採買伴手禮', location: 'Vincom Plaza 或 Big C', color: 'green', imageUrl: 'https://images.unsplash.com/photo-1542838132-ff45b3a3250b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmllbmFtZXNlJTIwc2hvcHBpbmclMjBtYXJrZXR8ZW58MHx8fHwxNzE4MjU5ODczfDA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '12:30', type: 'meal', title: '午餐', location: '市區', color: 'orange', imageUrl: 'https://images.unsplash.com/photo-1521783988732-c67d669c28e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fGhvaSUyMGFuJTIwZm9vZHxlbnwwfHx8fDE3MTgyNTkzNjl8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '14:00', type: 'flight', title: '前往峴港機場', location: 'DAD', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' },
+      { time: '16:00', type: 'flight', title: '搭機返回台北', location: 'DAD -> TPE', color: 'blue', imageUrl: 'https://images.unsplash.com/photo-1581467464195-23c50005b4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxhbGx8fGZsaWdodHxlbnwwfHx8fDE3MTgyNTg5Mzh8MA&ixlib=rb-4.0.3&q=80&w=400' }
     ]
   }
 ];
@@ -419,6 +419,14 @@ function Itinerary() {
 
                {/* Activity Card */}
                <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                 {activity.imageUrl && (
+                   <img 
+                     src={activity.imageUrl} 
+                     alt={activity.title} 
+                     className="w-full h-32 object-cover rounded-lg mb-3 border border-gray-100" 
+                     onError={(e) => {e.target.onerror = null; e.target.src="https://via.placeholder.com/200x100?text=No+Image"}} 
+                   />
+                 )}
                  <div className="flex justify-between items-start mb-2">
                    <span className="bg-blue-50 text-[#4a7c8e] text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
                      <i className={`ph-fill ${getIconForType(activity.type)}`}></i> 
