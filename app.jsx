@@ -587,10 +587,17 @@ function SOS({ onLogout }) {
   );
 }
 
+const AI_MODELS = [
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash ⚡' },
+  { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro 🧠' },
+  { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+  { value: 'ollama/gemma4', label: 'Ollama Gemma4 (本機)' },
+];
+
 function AiAssistant({ user }) {
   const [requests, setRequests] = useState([]);
   const [newReq, setNewReq] = useState("");
-  const [config, setConfig] = useState({ geminiKey: '', githubToken: '' });
+  const [config, setConfig] = useState({ geminiKey: '', githubToken: '', aiModel: 'gemini-2.5-flash' });
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [loadingText, setLoadingText] = useState("");
 
@@ -603,7 +610,7 @@ function AiAssistant({ user }) {
 
     const unsubscribeConfig = onSnapshot(doc(db, "system_config", "ai_keys"), (docSnap) => {
       if (docSnap.exists()) {
-        setConfig(docSnap.data());
+        setConfig(prev => ({ aiModel: 'gemini-2.5-flash', ...docSnap.data() }));
       } else {
         setIsConfiguring(true);
       }
@@ -623,90 +630,75 @@ function AiAssistant({ user }) {
     }
   };
 
+  const callAI = async (model, prompt) => {
+    if (model.startsWith('ollama/')) {
+      const ollamaModel = model.replace('ollama/', '');
+      const res = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: ollamaModel, prompt, stream: false })
+      });
+      if (!res.ok) throw new Error('Ollama 呼叫失敗，請確認 Ollama 正在執行 (port 11434)。');
+      const data = await res.json();
+      return data.response;
+    } else {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.geminiKey.trim()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(`Gemini API 失敗: ${errData.error?.message || '未知錯誤'}`);
+      }
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newReq.trim() || !db) return;
-    if (!config.geminiKey || !config.githubToken) {
-      setIsConfiguring(true);
-      return alert("請先設定 Gemini API Key 與 GitHub Token！");
-    }
+    const model = config.aiModel || 'gemini-2.5-flash';
+    const isOllama = model.startsWith('ollama/');
+    if (!isOllama && !config.geminiKey) { setIsConfiguring(true); return alert('請先設定 Gemini API Key！'); }
+    if (!config.githubToken) { setIsConfiguring(true); return alert('請先設定 GitHub Token！'); }
 
     const requestText = newReq;
     setNewReq("");
-    
     let reqRef;
     try {
       reqRef = await addDoc(collection(db, "ai_requests"), {
-        text: requestText,
-        author: user.displayName || user.email,
-        createdAt: serverTimestamp(),
-        status: 'processing'
+        text: requestText, author: user.displayName || user.email,
+        model: model, createdAt: serverTimestamp(), status: 'processing'
       });
     } catch(e) { console.error(e); }
 
     try {
       setLoadingText("正在取得最新原始碼...");
       const repoUrl = "https://api.github.com/repos/willy126534/vietnam-trip-pwa/contents/app.jsx";
-      
-      const fileRes = await fetch(repoUrl, {
-        headers: { "Authorization": `token ${config.githubToken.trim()}` }
-      });
+      const fileRes = await fetch(repoUrl, { headers: { "Authorization": `token ${config.githubToken.trim()}` } });
       if (!fileRes.ok) throw new Error("取得原始碼失敗 (請確認 GitHub Token 權限)");
       const fileData = await fileRes.json();
-      
       const currentCode = decodeURIComponent(escape(atob(fileData.content)));
       const sha = fileData.sha;
 
-      setLoadingText("正在呼叫 Gemini 修改程式碼...");
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${config.geminiKey.trim()}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `You are an expert React developer. Modify the following React single-file code based on the user's request. 
-Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.
-USER REQUEST: ${requestText}
-CURRENT CODE:
-${currentCode}`
-            }]
-          }]
-        })
-      });
-      
-      if (!geminiRes.ok) {
-        const errorData = await geminiRes.json();
-        throw new Error(`Gemini API 失敗: ${errorData.error?.message || '未知錯誤'}`);
-      }
-      const geminiData = await geminiRes.json();
-      let newCode = geminiData.candidates[0].content.parts[0].text;
-      
+      setLoadingText(`正在呼叫 ${model} 修改程式碼...`);
+      const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not use Markdown outside of that block.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
+      let newCode = await callAI(model, prompt);
       newCode = newCode.replace(/```jsx\n?/g, "").replace(/```\n?/g, "").trim();
 
       setLoadingText("正在推送到 GitHub...");
       const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
-
       const updateRes = await fetch(repoUrl, {
         method: "PUT",
-        headers: { 
-          "Authorization": `token ${config.githubToken}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: `AI Auto Update: ${requestText}`,
-          content: encodedCode,
-          sha: sha
-        })
+        headers: { "Authorization": `token ${config.githubToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: `AI Auto Update (${model}): ${requestText}`, content: encodedCode, sha })
       });
-
       if (!updateRes.ok) throw new Error("推送到 GitHub 失敗");
-
-      if (reqRef) {
-        await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'completed' });
-      }
+      if (reqRef) await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'completed' });
       setLoadingText("");
       alert("修改成功！PWA 將在 1-2 分鐘後更新，請強制重新整理頁面。");
-
     } catch (err) {
       setLoadingText("");
       if (reqRef) await updateDoc(doc(db, "ai_requests", reqRef.id), { status: 'error', error: err.message });
@@ -722,15 +714,22 @@ ${currentCode}`
            <p className="text-xs text-gray-500 mb-6 leading-relaxed">這是讓 PWA 能夠「自我修改」的核心。金鑰會安全儲存在 Firebase 中，不會被推送到公開的 GitHub。</p>
            <form onSubmit={saveConfig} className="space-y-4">
              <div>
+               <label className="text-xs font-bold text-gray-700 block mb-1">AI 模型選擇</label>
+               <select value={config.aiModel || 'gemini-2.5-flash'} onChange={e => setConfig({...config, aiModel: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                 {AI_MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+               </select>
+             </div>
+             <div>
                <label className="text-xs font-bold text-gray-700 block mb-1">Gemini API Key</label>
-               <input type="password" value={config.geminiKey || ''} onChange={e => setConfig({...config, geminiKey: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="AIzaSy..." required />
+               <input type="password" value={config.geminiKey || ''} onChange={e => setConfig({...config, geminiKey: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="AIzaSy..." />
+               <p className="text-[10px] text-gray-400 mt-1">使用 Ollama 本機模型時可留空</p>
              </div>
              <div>
                <label className="text-xs font-bold text-gray-700 block mb-1">GitHub Fine-Grained Token</label>
                <input type="password" value={config.githubToken || ''} onChange={e => setConfig({...config, githubToken: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="github_pat_..." required />
              </div>
              <div className="pt-4 flex gap-2">
-                {config.geminiKey && <button type="button" onClick={() => setIsConfiguring(false)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">取消</button>}
+                {config.githubToken && <button type="button" onClick={() => setIsConfiguring(false)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">取消</button>}
                 <button type="submit" className="flex-1 bg-purple-600 text-white py-3 rounded-xl font-bold">儲存設定</button>
              </div>
            </form>
@@ -741,18 +740,27 @@ ${currentCode}`
 
   return (
     <div className="pb-24 flex flex-col h-screen bg-[#f5f6f8]">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 shadow-sm shrink-0 flex justify-between items-start">
-        <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <i className="ph-fill ph-magic-wand"></i> AI 工程師
-          </h2>
-          <p className="text-[10px] text-purple-100 mt-2 leading-tight">
-            輸入願望，PWA 會自動呼叫 Gemini 幫你改寫程式碼並推送到 Git。
-          </p>
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 shadow-sm shrink-0">
+        <div className="flex justify-between items-start mb-3">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <i className="ph-fill ph-magic-wand"></i> AI 工程師
+            </h2>
+            <p className="text-[10px] text-purple-100 mt-1 leading-tight">
+              輸入願望，自動呼叫 AI 改寫程式碼並推送到 Git。
+            </p>
+          </div>
+          <button onClick={() => setIsConfiguring(true)} className="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-colors shrink-0 ml-2">
+            <i className="ph-fill ph-gear text-xl"></i>
+          </button>
         </div>
-        <button onClick={() => setIsConfiguring(true)} className="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-colors shrink-0 ml-2">
-          <i className="ph-fill ph-gear text-xl"></i>
-        </button>
+        <select
+          value={config.aiModel || 'gemini-2.5-flash'}
+          onChange={e => setConfig({...config, aiModel: e.target.value})}
+          className="w-full bg-white/20 border border-white/30 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+        >
+          {AI_MODELS.map(m => <option key={m.value} value={m.value} className="text-gray-800 bg-white">{m.label}</option>)}
+        </select>
       </div>
       
       {loadingText && (
@@ -771,7 +779,10 @@ ${currentCode}`
           requests.map(req => (
             <div key={req.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
               <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">{req.author}</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">{req.author}</span>
+                  {req.model && <span className="text-[10px] text-gray-400 pl-1">{req.model}</span>}
+                </div>
                 {req.status === 'completed' ? (
                   <span className="text-xs text-green-500 font-bold flex items-center gap-1"><i className="ph-bold ph-check"></i> 已完成</span>
                 ) : req.status === 'error' ? (
@@ -781,6 +792,7 @@ ${currentCode}`
                 )}
               </div>
               <p className="text-gray-700 text-sm whitespace-pre-wrap">{req.text}</p>
+              {req.status === 'error' && req.error && <p className="text-red-400 text-xs mt-2 bg-red-50 px-2 py-1 rounded">{req.error}</p>}
             </div>
           ))
         )}
