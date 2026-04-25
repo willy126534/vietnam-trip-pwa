@@ -121,6 +121,7 @@ const DEFAULT_ITINERARY = [
 
 // --- AI Models Configuration ---
 const AI_MODELS = [
+  { value: 'gemini-3-flash', label: 'Gemini 3 Flash ✨' },
   { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash ⚡' },
   { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro 🧠' },
   { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
