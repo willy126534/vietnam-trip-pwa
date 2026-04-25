@@ -97,7 +97,7 @@ async function getFileSha() {
 
 async function run() {
   console.log('Checking website status...');
-  const appJsx = await fetchUrl(APP_JSX_URL);
+  const appJsx = await fetchUrl(`${APP_JSX_URL}?t=${Date.now()}`);
 
   const isBroken = appJsx.startsWith('```jsx') || appJsx.startsWith('```javascript') || appJsx.length < 100;
 
