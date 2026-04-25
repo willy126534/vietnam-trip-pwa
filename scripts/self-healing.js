@@ -99,15 +99,28 @@ async function run() {
   console.log('Checking website status...');
   const appJsx = await fetchUrl(`${APP_JSX_URL}?t=${Date.now()}`);
 
-  const isBroken = appJsx.startsWith('```jsx') || appJsx.startsWith('```javascript') || appJsx.length < 100;
+  const isBroken = appJsx.startsWith('```jsx') || 
+                   appJsx.startsWith('```javascript') || 
+                   appJsx.startsWith('Here is') ||
+                   appJsx.startsWith('Sure') ||
+                   appJsx.length < 1000 ||
+                   (appJsx.includes('```') && !appJsx.startsWith('import'));
 
   if (isBroken) {
     console.log('Website detected as broken! Initiating fix...');
-    const prompt = `The following React code is broken (possibly contains markdown markers or is corrupted). Please fix it and return ONLY the raw React code. Do not include markdown markers.\n\nCODE:\n${appJsx}`;
+    const prompt = `The following React code is broken (possibly contains markdown markers, conversational text, or is corrupted). Please fix it and return ONLY the raw React code. Do not include markdown markers.\n\nCODE:\n${appJsx}`;
     
     try {
       const fixedCode = await callGemini(prompt);
-      const cleanedCode = fixedCode.replace(/```jsx\n?/g, "").replace(/```javascript\n?/g, "").replace(/```\n?/g, "").trim();
+      
+      let cleanedCode = fixedCode;
+      const codeBlockRegex = /```(?:jsx|javascript)?\n?([\s\S]*?)\n?```/i;
+      const match = fixedCode.match(codeBlockRegex);
+      if (match && match[1]) {
+        cleanedCode = match[1].trim();
+      } else {
+        cleanedCode = fixedCode.replace(/```jsx\n?/g, "").replace(/```javascript\n?/g, "").replace(/```\n?/g, "").trim();
+      }
       
       const sha = await getFileSha();
       await pushToGithub(cleanedCode, sha);

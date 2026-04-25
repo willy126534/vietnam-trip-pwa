@@ -881,16 +881,21 @@ function AiAssistant({ user }) {
 
       setLoadingText(`正在呼叫 ${model} 修改程式碼...`);
       const prompt = `You are an expert React developer. Modify the following React single-file code based on the user's request. Return ONLY the raw React code inside a \`\`\`jsx \`\`\` block. Do not include any text before or after the code block. Maintain the existing file structure and DO NOT remove newlines.\nUSER REQUEST: ${requestText}\nCURRENT CODE:\n${currentCode}`;
-      let newCode = await callAI(model, prompt, config.geminiKey); 
+      let aiResponse = await callAI(model, prompt, config.geminiKey); 
 
-      // CRITICAL: Robustly remove markdown markers without destroying newlines.
-      // Do NOT use .replace(/\n?/g, "") as it will crush the code into one line.
-      newCode = newCode.replace(/```jsx\n?/g, "")
-                      .replace(/```javascript\n?/g, "")
-                      .replace(/```\n?/g, "")
-                      .replace(/^```/, "")
-                      .replace(/```$/, "")
-                      .trim();
+      // CRITICAL: Extract only the code block to avoid saving conversational text.
+      let newCode = aiResponse;
+      const codeBlockRegex = /```(?:jsx|javascript)?\n?([\s\S]*?)\n?```/i;
+      const match = aiResponse.match(codeBlockRegex);
+      if (match && match[1]) {
+        newCode = match[1].trim();
+      } else {
+        // Fallback: strip markers if they exist but don't match the regex perfectly
+        newCode = aiResponse.replace(/```jsx\n?/g, "")
+                            .replace(/```javascript\n?/g, "")
+                            .replace(/```\n?/g, "")
+                            .trim();
+      }
 
       setLoadingText("正在推送到 GitHub...");
       const encodedCode = btoa(unescape(encodeURIComponent(newCode)));
